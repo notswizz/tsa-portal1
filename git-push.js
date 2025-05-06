@@ -9,6 +9,7 @@
  * - Option to commit only specific files
  * - Check for uncommitted changes
  * - Error handling
+ * - Dynamic remote detection
  */
 
 const { execSync } = require('child_process');
@@ -34,6 +35,21 @@ function runGitCommand(command) {
 // Get current branch
 function getCurrentBranch() {
   return runGitCommand('git symbolic-ref --short HEAD').trim();
+}
+
+// Get the first remote name
+function getRemoteName() {
+  try {
+    const remotes = runGitCommand('git remote').trim();
+    if (!remotes) {
+      throw new Error('No git remotes configured');
+    }
+    return remotes.split('\n')[0].trim();
+  } catch (error) {
+    console.error('\n❌ No git remote configured. Please set up a remote repository first.');
+    console.error('Use: git remote add <name> <url>');
+    process.exit(1);
+  }
 }
 
 // Check if there are any changes to commit
@@ -98,14 +114,15 @@ async function main() {
     console.log(`\n💾 Committing with message: "${commitMessage}"`);
     runGitCommand(`git commit -m "${commitMessage}"`);
 
-    // Get current branch
+    // Get current branch and remote
     const currentBranch = getCurrentBranch();
+    const remoteName = getRemoteName();
 
     // Ask for confirmation before pushing
-    rl.question(`Push to ${currentBranch}? (y/n): `, (confirmPush) => {
+    rl.question(`Push to ${remoteName}/${currentBranch}? (y/n): `, (confirmPush) => {
       if (confirmPush.toLowerCase() === 'y' || confirmPush.toLowerCase() === 'yes') {
-        console.log(`\n⬆️ Pushing to branch: ${currentBranch}...`);
-        runGitCommand(`git push origin ${currentBranch}`);
+        console.log(`\n⬆️ Pushing to ${remoteName}/${currentBranch}...`);
+        runGitCommand(`git push ${remoteName} ${currentBranch}`);
         console.log('\n✅ Successfully pushed changes to GitHub!');
       } else {
         console.log('\nChanges committed but not pushed.');

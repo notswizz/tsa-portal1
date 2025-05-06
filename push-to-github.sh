@@ -21,10 +21,18 @@ git add .
 echo "Committing changes with message: $COMMIT_MESSAGE"
 git commit -m "$COMMIT_MESSAGE"
 
+# Get remote name (first remote in the list)
+REMOTE_NAME=$(git remote | head -n 1)
+if [ -z "$REMOTE_NAME" ]; then
+    echo "❌ No git remote configured. Please set up a remote repository first."
+    echo "Use: git remote add <name> <url>"
+    exit 1
+fi
+
 # Push to the current branch
 CURRENT_BRANCH=$(git symbolic-ref --short HEAD)
-echo "Pushing to branch: $CURRENT_BRANCH"
-git push origin $CURRENT_BRANCH
+echo "Pushing to branch: $CURRENT_BRANCH using remote: $REMOTE_NAME"
+git push $REMOTE_NAME $CURRENT_BRANCH
 
 # Check if push was successful
 if [ $? -eq 0 ]; then
