@@ -1,3 +1,36 @@
+#!/bin/bash
+
+# Script to help fix the sensitive credential issues in the repository
+# This will create an environment file for storing secrets and update the code to use it
+
+echo "🔐 Creating .env file for sensitive credentials..."
+cat > .env << EOL
+# Environment Variables
+NEXTAUTH_SECRET=your-nextauth-secret-key
+GOOGLE_CLIENT_ID=221969249317-kmm7qntmg5bu6eak3sipp7pt8uotmr08.apps.googleusercontent.com
+GOOGLE_CLIENT_SECRET=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
+FIREBASE_API_KEY=AIzaSyC1I_hYoiuc-IEMNwaSss41CD7jnaEpy7Q
+FIREBASE_AUTH_DOMAIN=the-smith-agency.firebaseapp.com
+FIREBASE_PROJECT_ID=the-smith-agency
+FIREBASE_STORAGE_BUCKET=the-smith-agency.firebasestorage.app
+FIREBASE_MESSAGING_SENDER_ID=1048512215721
+FIREBASE_APP_ID=1:1048512215721:web:c092a7c008d61c4c7d47b8
+FIREBASE_MEASUREMENT_ID=G-QTTX3YDDMP
+EOL
+
+echo "📝 Updating .gitignore to exclude .env file..."
+if ! grep -q "^.env$" .gitignore; then
+    echo "" >> .gitignore
+    echo "# Environment variables" >> .gitignore
+    echo ".env" >> .gitignore
+    echo ".env.local" >> .gitignore
+    echo ".env.development.local" >> .gitignore
+    echo ".env.test.local" >> .gitignore
+    echo ".env.production.local" >> .gitignore
+fi
+
+echo "🔧 Updating NextAuth configuration to use environment variables..."
+cat > pages/api/auth/[...nextauth].js << EOL
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
 import { initializeApp, getApps } from 'firebase/app';
@@ -78,3 +111,13 @@ export default NextAuth({
   },
   debug: process.env.NODE_ENV === 'development',
 });
+EOL
+
+echo "✅ Updates complete!"
+echo ""
+echo "🚨 IMPORTANT NEXT STEPS 🚨"
+echo "1. Make sure to add .env.example with empty values for documentation"
+echo "2. Commit these changes and try pushing again"
+echo "3. Store your real credentials securely in a .env file or environment variables"
+echo ""
+echo "You can now run: ./push-to-github.sh \"Fix: Remove sensitive credentials\" to commit and push these changes" 
