@@ -109,17 +109,17 @@ export default function BookingSummary({ staffDocRef, staffEmail, staffName }) {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-4">
-        <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-pink-500"></div>
+      <div className="flex justify-center py-3 sm:py-4">
+        <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-t-2 border-b-2 border-pink-500"></div>
       </div>
     );
   }
 
   if (bookings.length === 0) {
     return (
-      <div className="text-center py-4 text-gray-500">
+      <div className="text-center py-3 sm:py-4 text-gray-500">
         <p>No upcoming bookings found.</p>
-        <p className="text-sm mt-2">You'll see your scheduled bookings here when you're assigned to events.</p>
+        <p className="text-xs sm:text-sm mt-1 sm:mt-2">You'll see your scheduled bookings here when you're assigned to events.</p>
       </div>
     );
   }
@@ -227,22 +227,21 @@ export default function BookingSummary({ staffDocRef, staffEmail, staffName }) {
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3 sm:space-y-4">
       {groupedBookings.map((booking, index) => (
-        <div key={`${booking.id}-${booking.clientId}-${index}`} className="border border-pink-100 rounded-lg p-3 bg-pink-50">
-          <div className="flex justify-between items-start">
-            <div>
-              <h4 className="font-medium text-gray-900">{booking.title}</h4>
-              <p className="text-sm text-gray-600">Client: {booking.clientName}</p>
+        <div key={`${booking.id}-${booking.clientId}-${index}`} className="border border-pink-100 rounded-lg p-2.5 sm:p-3 bg-pink-50">
+          <div className="flex justify-between items-start flex-wrap gap-1 sm:flex-nowrap">
+            <div className="pr-2">
+              <h4 className="font-medium text-gray-900 text-sm sm:text-base">{booking.title}</h4>
+              <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Client: {booking.clientName}</p>
             </div>
-            <div className="bg-pink-100 text-xs text-pink-800 px-2 py-1 rounded">
+            <div className="bg-pink-100 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap text-pink-800">
               {booking.dates.length} {booking.dates.length === 1 ? 'day' : 'days'}
             </div>
           </div>
           
-          <div className="mt-3">
-          
-            <p className="text-sm text-gray-700 ml-5">
+          <div className="mt-2 sm:mt-3">
+            <p className="text-xs sm:text-sm text-gray-700 ml-0 sm:ml-5">
               {formatDateRange(booking.dates)}
             </p>
           </div>

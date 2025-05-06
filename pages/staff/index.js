@@ -169,20 +169,20 @@ export default function StaffPortal() {
   // Staff dashboard content
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
-      {/* Modern header with user info */}
-      <header className="bg-white shadow-md border-b-2 border-pink-500 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Mobile-optimized header with user info */}
+      <header className="bg-white shadow-md border-b-2 border-pink-500 py-3 sticky top-0 z-50">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <div className="w-10 h-10 bg-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xl">TSA</span>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-lg sm:text-xl">TSA</span>
               </div>
-              <span className="text-2xl font-bold text-pink-600">
+              <span className="text-lg sm:text-2xl font-bold text-pink-600 truncate">
                 The Smith Agency
               </span>
             </Link>
             
-            <div className="flex items-center space-x-6">
+            <div className="flex items-center space-x-3 sm:space-x-6">
               <div className="hidden md:flex space-x-6">
                 <Link href="/" className="text-gray-600 hover:text-pink-600 transition-colors">
                   Home
@@ -191,7 +191,7 @@ export default function StaffPortal() {
               
               <div className="flex items-center bg-white rounded-full shadow-md p-1 border border-pink-300">
                 {session.user.image && (
-                  <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-pink-500">
+                  <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border-2 border-pink-500">
                     <Image 
                       src={session.user.image} 
                       alt={session.user.name}
@@ -201,15 +201,15 @@ export default function StaffPortal() {
                     />
                   </div>
                 )}
-                <div className="mx-3 hidden md:block">
-                  <p className="text-sm font-medium text-gray-700">
+                <div className="mx-2 sm:mx-3 hidden sm:block">
+                  <p className="text-sm font-medium text-gray-700 truncate max-w-[100px] md:max-w-none">
                     {session.user.name}
                   </p>
-                  <p className="text-xs text-pink-500">Staff Member</p>
+                  <p className="text-xs text-pink-500">Staff</p>
                 </div>
                 <button
                   onClick={() => signOut({ callbackUrl: '/' })}
-                  className="ml-1 md:ml-3 p-1.5 rounded-full text-gray-500 hover:text-white hover:bg-pink-500 transition-colors"
+                  className="p-1.5 rounded-full text-gray-500 hover:text-white hover:bg-pink-500 transition-colors"
                   title="Log out"
                 >
                   <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -223,24 +223,24 @@ export default function StaffPortal() {
       </header>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-        {/* Profile Section - Full Width Top Row */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 mb-6">
-          <div className="px-6 py-5 border-b border-pink-200 bg-pink-500">
-            <h2 className="text-xl font-bold text-white flex items-center">
-              <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10">
+        {/* Mobile-optimized Profile Section */}
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 mb-4 sm:mb-6">
+          <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-pink-200 bg-pink-500">
+            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
+              <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               My Profile
             </h2>
           </div>
           
-          <div className="p-6">
+          <div className="p-4 sm:p-6">
             <div className="flex flex-col md:flex-row items-center md:items-start">
-              <div className="flex justify-center mb-6 md:mb-0 md:mr-8">
+              <div className="flex justify-center mb-4 md:mb-0 md:mr-8">
                 <div className="relative">
                   {session.user.image ? (
-                    <div className="h-24 w-24 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-pink-500">
+                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-pink-500">
                       <Image 
                         src={session.user.image} 
                         alt={session.user.name}
@@ -250,8 +250,8 @@ export default function StaffPortal() {
                       />
                     </div>
                   ) : (
-                    <div className="h-24 w-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-lg ring-2 ring-pink-500">
-                      <span className="text-3xl font-bold text-gray-400">
+                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-lg ring-2 ring-pink-500">
+                      <span className="text-2xl sm:text-3xl font-bold text-gray-400">
                         {session.user.name?.charAt(0) || "U"}
                       </span>
                     </div>
@@ -262,13 +262,13 @@ export default function StaffPortal() {
                 </div>
               </div>
               
-              <div className="text-center md:text-left md:flex-grow">
+              <div className="text-center md:text-left md:flex-grow w-full">
                 <h3 className="text-xl font-bold text-gray-800">{session.user.name}</h3>
-                <p className="text-pink-500 mb-4">{session.user.email}</p>
+                <p className="text-pink-500 mb-4 text-sm truncate">{session.user.email}</p>
                 
                 <div className="border-t border-pink-100 pt-4 md:pt-6">
                   <div className="mb-4">
-                    <div className="flex justify-between items-center mb-2">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-2">
                       <h4 className="text-lg font-semibold text-gray-900">Staff Profile</h4>
                       {isEditing ? (
                         <div className="flex space-x-2">
@@ -291,7 +291,7 @@ export default function StaffPortal() {
                       ) : (
                         <button 
                           onClick={() => setIsEditing(true)}
-                          className="px-4 py-2 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-150 ease-in-out shadow-sm hover:shadow-md"
+                          className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-150 ease-in-out shadow-sm hover:shadow-md"
                         >
                           Edit Profile
                         </button>
@@ -301,8 +301,8 @@ export default function StaffPortal() {
                   </div>
                   
                   {isEditing ? (
-                    // Edit mode - form inputs
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    // Edit mode - form inputs, mobile-optimized
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
                         <label className="block text-sm text-gray-700 font-medium mb-1">College/University</label>
                         <input
@@ -316,7 +316,7 @@ export default function StaffPortal() {
                       <div>
                         <label className="block text-sm text-gray-700 font-medium mb-1">Phone</label>
                         <input
-                          type="text"
+                          type="tel"
                           name="phone"
                           value={editedProfile.phone}
                           onChange={handleProfileChange}
@@ -355,8 +355,8 @@ export default function StaffPortal() {
                       </div>
                     </div>
                   ) : (
-                    // View mode - display data
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    // View mode - mobile-optimized display
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
                       <div>
                         <p className="text-sm text-pink-600 font-medium">College/University</p>
                         <p className="font-medium text-gray-800">{profileData.college || 'Not specified'}</p>
@@ -385,40 +385,42 @@ export default function StaffPortal() {
           </div>
         </div>
         
-        {/* Calendar and Availability - Two Columns */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Calendar and Availability - One Column on Mobile, Two on Larger Screens */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
           {/* Calendar Section */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 h-[550px] overflow-y-auto">
-            <div className="px-6 py-5 border-b border-pink-200 bg-pink-500 sticky top-0 z-10">
-              <h2 className="text-xl font-bold text-white flex items-center">
-                <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 max-h-[450px] sm:max-h-[550px] overflow-y-auto">
+            <div className="px-4 sm:px-6 py-3 sm:py-5 border-b border-pink-200 bg-pink-500 sticky top-0 z-10">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Calendar
               </h2>
             </div>
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <AvailabilityCalendar staffDocRef={staffDocRef} />
             </div>
             
             {/* Current Bookings/Availability Summary */}
-            <div className="mt-4 border-t-2 border-pink-200 pt-4">
-              <h3 className="text-lg font-semibold text-pink-600 mb-3">Bookings</h3>
-              <BookingSummary staffDocRef={staffDocRef} staffEmail={session.user.email} staffName={session.user.name} />
+            <div className="mt-3 sm:mt-4 border-t-2 border-pink-200 pt-3 sm:pt-4">
+              <h3 className="text-base sm:text-lg font-semibold text-pink-600 mb-2 sm:mb-3 px-3 sm:px-4">Bookings</h3>
+              <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                <BookingSummary staffDocRef={staffDocRef} staffEmail={session.user.email} staffName={session.user.name} />
+              </div>
             </div>
           </div>
           
           {/* Availability Section */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 h-[550px] overflow-y-auto">
-            <div className="px-6 py-5 border-b border-pink-200 bg-pink-500 sticky top-0 z-10">
-              <h2 className="text-xl font-bold text-white flex items-center">
-                <svg className="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 max-h-[450px] sm:max-h-[550px] overflow-y-auto">
+            <div className="px-4 sm:px-6 py-3 sm:py-5 border-b border-pink-200 bg-pink-500 sticky top-0 z-10">
+              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
+                <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Manage Availability
               </h2>
             </div>
-            <div className="p-4">
+            <div className="p-3 sm:p-4">
               <ShowAvailability session={session} staffDocRef={staffDocRef} />
             </div>
           </div>

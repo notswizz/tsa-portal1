@@ -116,34 +116,34 @@ export default function Availability() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
-          <p className="mt-4 text-lg text-gray-600">Loading your availability settings...</p>
+          <div className="animate-spin rounded-full h-10 w-10 sm:h-12 sm:w-12 border-t-2 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-base sm:text-lg text-gray-600">Loading your availability settings...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="text-center mb-10">
-        <h1 className="text-3xl font-extrabold text-gray-900 sm:text-4xl">Manage Availability</h1>
-        <p className="mt-4 text-lg text-gray-600 max-w-3xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div className="text-center mb-6 sm:mb-10">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900">Manage Availability</h1>
+        <p className="mt-3 sm:mt-4 text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
           Set your working hours and mark days when you're unavailable.
         </p>
       </div>
 
-      <div className="space-y-10">
+      <div className="space-y-6 sm:space-y-10">
         {/* Working Hours Section */}
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg leading-6 font-medium text-gray-900">Working Hours</h2>
+          <div className="px-4 py-4 sm:px-6 sm:py-5">
+            <h2 className="text-base sm:text-lg leading-6 font-medium text-gray-900">Working Hours</h2>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">Set your regular weekly schedule.</p>
           </div>
           <div className="border-t border-gray-200">
-            <div className="bg-gray-50 px-4 py-5 sm:p-6">
-              <div className="space-y-4">
+            <div className="bg-gray-50 px-4 py-4 sm:p-6">
+              <div className="space-y-3 sm:space-y-4">
                 {daysOfWeek.map((day) => (
-                  <div key={day.id} className="flex items-center justify-between py-3 border-b border-gray-200 last:border-0">
+                  <div key={day.id} className="flex items-center justify-between py-2 sm:py-3 border-b border-gray-200 last:border-0">
                     <div className="flex items-center">
                       <input
                         id={`working-${day.id}`}
@@ -157,7 +157,7 @@ export default function Availability() {
                       </label>
                     </div>
                     
-                    <div className="flex items-center space-x-4">
+                    <div className="flex items-center space-x-2 sm:space-x-4">
                       <div className="flex items-center">
                         <label htmlFor={`start-${day.id}`} className="sr-only">Start time</label>
                         <input
@@ -166,10 +166,10 @@ export default function Availability() {
                           value={availabilityData.workingHours[day.id].start}
                           onChange={(e) => handleTimeChange(day.id, 'start', e.target.value)}
                           disabled={!availabilityData.workingHours[day.id].isWorking}
-                          className="block w-28 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary disabled:opacity-50"
+                          className="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary disabled:opacity-50 text-sm sm:text-base"
                         />
                       </div>
-                      <span className="text-gray-500">to</span>
+                      <span className="text-gray-500 text-sm">to</span>
                       <div className="flex items-center">
                         <label htmlFor={`end-${day.id}`} className="sr-only">End time</label>
                         <input
@@ -178,7 +178,7 @@ export default function Availability() {
                           value={availabilityData.workingHours[day.id].end}
                           onChange={(e) => handleTimeChange(day.id, 'end', e.target.value)}
                           disabled={!availabilityData.workingHours[day.id].isWorking}
-                          className="block w-28 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary disabled:opacity-50"
+                          className="block w-24 sm:w-28 rounded-md border-gray-300 shadow-sm focus:border-primary focus:ring-primary disabled:opacity-50 text-sm sm:text-base"
                         />
                       </div>
                     </div>
@@ -191,13 +191,13 @@ export default function Availability() {
 
         {/* Unavailable Dates Section */}
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
-          <div className="px-4 py-5 sm:px-6">
-            <h2 className="text-lg leading-6 font-medium text-gray-900">Unavailable Dates</h2>
+          <div className="px-4 py-4 sm:px-6 sm:py-5">
+            <h2 className="text-base sm:text-lg leading-6 font-medium text-gray-900">Unavailable Dates</h2>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">Mark specific days when you're not available.</p>
           </div>
           <div className="border-t border-gray-200">
-            <div className="bg-gray-50 px-4 py-5 sm:p-6">
-              <div className="flex space-x-3">
+            <div className="bg-gray-50 px-4 py-4 sm:p-6">
+              <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-3">
                 <div className="flex-grow">
                   <label htmlFor="new-unavailable-date" className="sr-only">Add unavailable date</label>
                   <input
@@ -212,26 +212,26 @@ export default function Availability() {
                 <button
                   type="button"
                   onClick={handleAddUnavailableDate}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary"
                 >
                   Add Date
                 </button>
               </div>
 
-              <div className="mt-6">
+              <div className="mt-4 sm:mt-6">
                 {availabilityData.unavailableDates.length === 0 ? (
-                  <p className="text-sm text-gray-500 text-center py-4">No unavailable dates set.</p>
+                  <p className="text-sm text-gray-500 text-center py-3 sm:py-4">No unavailable dates set.</p>
                 ) : (
-                  <ul className="divide-y divide-gray-200 max-h-60 overflow-y-auto">
+                  <ul className="divide-y divide-gray-200 max-h-48 sm:max-h-60 overflow-y-auto rounded-md border border-gray-200">
                     {availabilityData.unavailableDates.map((date) => (
-                      <li key={date} className="py-3 flex justify-between items-center">
-                        <span className="text-sm font-medium text-gray-900">
+                      <li key={date} className="py-2 sm:py-3 px-3 flex justify-between items-center hover:bg-gray-50">
+                        <span className="text-sm font-medium text-gray-900 truncate pr-2">
                           {new Date(date).toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                         </span>
                         <button
                           type="button"
                           onClick={() => handleRemoveUnavailableDate(date)}
-                          className="ml-2 flex-shrink-0 text-red-500 hover:text-red-700"
+                          className="ml-2 flex-shrink-0 text-red-500 hover:text-red-700 p-1"
                         >
                           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -252,7 +252,7 @@ export default function Availability() {
             type="button"
             onClick={handleSaveAvailability}
             disabled={saving}
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
+            className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50"
           >
             {saving ? (
               <>
