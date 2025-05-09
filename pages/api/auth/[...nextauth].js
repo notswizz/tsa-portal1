@@ -1,7 +1,9 @@
 import NextAuth from 'next-auth';
 import GoogleProvider from 'next-auth/providers/google';
+import CredentialsProvider from 'next-auth/providers/credentials';
 import { initializeApp, getApps } from 'firebase/app';
 import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 // Initialize Firebase
 const firebaseConfig = {
@@ -16,12 +18,61 @@ const firebaseConfig = {
 
 const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApps()[0];
 const db = getFirestore(firebaseApp);
+const firebaseAuth = getAuth(firebaseApp);
 
-export default NextAuth({
+export const authOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    }),
+    CredentialsProvider({
+      name: 'Email & Password',
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          // Sign in with Firebase
+          const userCredential = await signInWithEmailAndPassword(
+            firebaseAuth,
+            credentials.email,
+            credentials.password
+          );
+          
+          if (userCredential.user) {
+            const userDoc = await getDoc(doc(db, 'clients', userCredential.user.uid));
+            
+            if (userDoc.exists()) {
+              const userData = userDoc.data();
+              return {
+                id: userCredential.user.uid,
+                email: userCredential.user.email,
+                name: userData.companyName || userCredential.user.email,
+                image: userData.logoUrl || null,
+                role: 'client'
+              };
+            } else {
+              // If user exists in Firebase but not in Firestore
+              return {
+                id: userCredential.user.uid,
+                email: userCredential.user.email,
+                name: userCredential.user.email,
+                role: 'client'
+              };
+            }
+          }
+          return null;
+        } catch (error) {
+          console.error("Firebase auth error:", error);
+          return null;
+        }
+      },
     }),
   ],
   secret: process.env.NEXTAUTH_SECRET,
@@ -34,8 +85,7 @@ export default NextAuth({
   },
   callbacks: {
     async signIn({ user, account, profile }) {
-      // When a user signs in, store their information in the staff collection
-      if (user && user.email) {
+      if (account.provider === 'google' && user && user.email) {
         try {
           // Check if user already exists in the staff collection
           const userRef = doc(db, 'staff', user.id);
@@ -56,25 +106,32 @@ export default NextAuth({
           console.error("Error saving user to Firestore:", error);
           // Still allow sign in even if storing to Firestore fails
         }
+        return true;
+      } else if (account.provider === 'credentials') {
+        // Credentials login is for clients
+        return true;
       }
-      return true;
+      return false;
     },
     async session({ session, token }) {
       // Add user info to session from token
       if (token) {
         session.user.id = token.sub;
-        session.user.role = 'staff';
+        session.user.role = token.role || 'client'; // Default to client for credential logins
       }
       return session;
     },
-    async jwt({ token, account, profile }) {
-      // Persist the Google access token to the token right after sign in
-      if (account && profile) {
+    async jwt({ token, account, user }) {
+      // Persist the access token and user role to the token right after sign in
+      if (account && user) {
         token.accessToken = account.access_token;
         token.provider = account.provider;
+        token.role = user.role || (account.provider === 'google' ? 'staff' : 'client');
       }
       return token;
     },
   },
   debug: process.env.NODE_ENV === 'development',
-});
+};
+
+export default NextAuth(authOptions);

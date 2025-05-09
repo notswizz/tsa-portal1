@@ -8,10 +8,10 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#FF1493', // Pink color
-          light: '#FF69B4',
-          dark: '#C71585',
-        }
+          DEFAULT: '#ec4899', // pink-500
+          dark: '#be185d',    // pink-700
+          light: '#f9a8d4',   // pink-300
+        },
       },
     },
   },
