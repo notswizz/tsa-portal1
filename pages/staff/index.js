@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { useSession, signIn, signOut } from 'next-auth/react';
+import { useSession, signIn } from 'next-auth/react';
 import { db } from '../../lib/firebase';
 import { doc, getDoc, collection, getDocs, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
-import Link from 'next/link';
 
 // Components
-import ShowAvailability from '../../components/staff/ShowAvailability';
-import AvailabilityCalendar from '../../components/staff/AvailabilityCalendar';
-import AvailabilitySummary from '../../components/staff/AvailabilitySummary';
-import BookingSummary from '../../components/staff/BookingSummary';
+import StaffHeader from '../../components/staff/StaffHeader';
+import EnhancedProfileSection from '../../components/staff/EnhancedProfileSection';
+import CalendarCard from '../../components/staff/CalendarCard';
+import BookingsCard from '../../components/staff/BookingsCard';
+import AvailabilityCard from '../../components/staff/AvailabilityCard';
 
 export default function StaffPortal() {
   const { data: session, status } = useSession();
@@ -25,24 +25,16 @@ export default function StaffPortal() {
     phone: '',
   });
   const [staffDocRef, setStaffDocRef] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [editedProfile, setEditedProfile] = useState({
-    college: '',
-    shoeSize: '',
-    dressSize: '',
-    phoneNumber: '',
-    address: '',
-    phone: '',
-  });
+  const [isEditingMobile, setIsEditingMobile] = useState(false);
 
+  // Loading state
   useEffect(() => {
-    // If the session loading is done, update loading state
     if (status !== 'loading') {
       setLoading(false);
     }
   }, [status]);
 
-  // Fetch staff profile from Firebase when session is available
+  // Fetch staff profile
   useEffect(() => {
     async function fetchProfileData() {
       if (session?.user?.email) {
@@ -88,7 +80,6 @@ export default function StaffPortal() {
             };
             
             setProfileData(profileInfo);
-            setEditedProfile(profileInfo);
           }
         } catch (error) {
           console.error("Error fetching staff profile:", error);
@@ -103,21 +94,25 @@ export default function StaffPortal() {
 
   const handleProfileChange = (e) => {
     const { name, value } = e.target;
-    setEditedProfile(prev => ({
+    setProfileData(prev => ({
       ...prev,
       [name]: value
     }));
   };
 
   const saveProfile = async () => {
-    if (staffDocRef) {
-      try {
-        await updateDoc(staffDocRef, editedProfile);
-        setProfileData(editedProfile);
-        setIsEditing(false);
-      } catch (error) {
-        console.error("Error updating profile:", error);
-      }
+    if (!staffDocRef) return;
+    
+    try {
+      // Update document with current profile data
+      await updateDoc(staffDocRef, {
+        ...profileData,
+        updatedAt: new Date()
+      });
+      
+      setIsEditingMobile(false);
+    } catch (error) {
+      console.error("Error saving profile:", error);
     }
   };
 
@@ -155,277 +150,210 @@ export default function StaffPortal() {
             </span>
             Sign in with Google
           </button>
-          
-          <div className="flex items-center justify-center mt-8">
-            <Link href="/" className="text-sm font-medium text-pink-600 hover:text-pink-800 hover:underline transition-all">
-              ← Return to home page
-            </Link>
-          </div>
         </div>
       </div>
     );
   }
 
-  // Staff dashboard content
+  // Staff dashboard content with modular components
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
-      {/* Mobile-optimized header with user info */}
-      <header className="bg-white shadow-md border-b-2 border-pink-500 py-3 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg sm:text-xl">TSA</span>
-              </div>
-              <span className="text-lg sm:text-2xl font-bold text-pink-600 truncate">
-                The Smith Agency
-              </span>
-            </Link>
-            
-            <div className="flex items-center space-x-3 sm:space-x-6">
-              <div className="hidden md:flex space-x-6">
-                <Link href="/" className="text-gray-600 hover:text-pink-600 transition-colors">
-                  Home
-                </Link>
-              </div>
-              
-              <div className="flex items-center bg-white rounded-full shadow-md p-1 border border-pink-300">
-                {session.user.image && (
-                  <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border-2 border-pink-500">
-                    <Image 
-                      src={session.user.image} 
-                      alt={session.user.name}
-                      width={36}
-                      height={36}
-                      className="h-full w-full object-cover"
-                    />
-                  </div>
-                )}
-                <div className="mx-2 sm:mx-3 hidden sm:block">
-                  <p className="text-sm font-medium text-gray-700 truncate max-w-[100px] md:max-w-none">
-                    {session.user.name}
-                  </p>
-                  <p className="text-xs text-pink-500">Staff</p>
-                </div>
-                <button
-                  onClick={() => signOut({ callbackUrl: '/' })}
-                  className="p-1.5 rounded-full text-gray-500 hover:text-white hover:bg-pink-500 transition-colors"
-                  title="Log out"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+      {/* Header */}
+      <StaffHeader session={session} />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-10">
-        {/* Mobile-optimized Profile Section */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 mb-4 sm:mb-6">
-          <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-pink-200 bg-pink-500">
-            <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
-              <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              My Profile
-            </h2>
-          </div>
-          
-          <div className="p-4 sm:p-6">
-            <div className="flex flex-col md:flex-row items-center md:items-start">
-              <div className="flex justify-center mb-4 md:mb-0 md:mr-8">
-                <div className="relative">
-                  {session.user.image ? (
-                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full overflow-hidden border-4 border-white shadow-lg ring-2 ring-pink-500">
-                      <Image 
-                        src={session.user.image} 
-                        alt={session.user.name}
-                        width={112}
-                        height={112}
-                        className="h-full w-full object-cover"
-                      />
-                    </div>
-                  ) : (
-                    <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-full bg-gray-200 flex items-center justify-center border-4 border-white shadow-lg ring-2 ring-pink-500">
-                      <span className="text-2xl sm:text-3xl font-bold text-gray-400">
-                        {session.user.name?.charAt(0) || "U"}
-                      </span>
-                    </div>
-                  )}
-                  <div className="absolute bottom-0 right-0 bg-green-500 p-1 rounded-full border-2 border-white">
-                    <div className="w-3 h-3 rounded-full bg-white"></div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="text-center md:text-left md:flex-grow w-full">
-                <h3 className="text-xl font-bold text-gray-800">{session.user.name}</h3>
-                <p className="text-pink-500 mb-4 text-sm truncate">{session.user.email}</p>
-                
-                <div className="border-t border-pink-100 pt-4 md:pt-6">
-                  <div className="mb-4">
-                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-2">
-                      <h4 className="text-lg font-semibold text-gray-900">Staff Profile</h4>
-                      {isEditing ? (
-                        <div className="flex space-x-2">
-                          <button 
-                            onClick={saveProfile}
-                            className="px-3 py-1.5 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-150"
-                          >
-                            Save
-                          </button>
-                          <button 
-                            onClick={() => {
-                              setIsEditing(false);
-                              setEditedProfile(profileData);
-                            }}
-                            className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 transition-all duration-150"
-                          >
-                            Cancel
-                          </button>
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4">
+        {/* Mobile View */}
+        <div className="lg:hidden space-y-4">
+          {/* Mobile Profile Summary - Only shows name, image, and booking stats */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300">
+            <div className="px-3 py-2 border-b border-pink-100 bg-gradient-to-r from-pink-500 to-pink-600 flex justify-between items-center">
+              <h2 className="text-base font-bold text-white flex items-center">
+                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                My Profile
+              </h2>
+              <button 
+                onClick={() => setIsEditingMobile(!isEditingMobile)}
+                className="px-2 py-1 text-xs font-medium text-white bg-pink-600 bg-opacity-30 rounded-md hover:bg-opacity-50 focus:outline-none transition-all duration-150"
+              >
+                {isEditingMobile ? 'Cancel' : 'Edit Profile'}
+              </button>
+            </div>
+            <div className="p-3 bg-gradient-to-br from-white to-pink-50">
+              {!isEditingMobile ? (
+                <>
+                  <div className="flex items-center mb-3">
+                    <div className="relative bg-gradient-to-br from-pink-500 to-pink-600 p-1 rounded-full shadow-lg mr-4">
+                      {session?.user?.image ? (
+                        <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white">
+                          <Image 
+                            src={session.user.image} 
+                            alt={session.user.name}
+                            width={56}
+                            height={56}
+                            className="h-full w-full object-cover"
+                          />
                         </div>
                       ) : (
-                        <button 
-                          onClick={() => setIsEditing(true)}
-                          className="w-full sm:w-auto px-4 py-2 text-sm font-medium text-white bg-pink-500 rounded-lg hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-150 ease-in-out shadow-sm hover:shadow-md"
-                        >
-                          Edit Profile
-                        </button>
+                        <div className="h-14 w-14 rounded-full bg-pink-200 flex items-center justify-center border-2 border-white">
+                          <span className="text-xl font-bold text-pink-700">
+                            {session?.user?.name?.charAt(0) || "U"}
+                          </span>
+                        </div>
                       )}
                     </div>
-                 
+                    <div>
+                      <h3 className="text-lg font-bold text-gray-800">{session?.user?.name}</h3>
+                      <p className="text-pink-500 text-xs truncate">{session?.user?.email}</p>
+                    </div>
                   </div>
                   
-                  {isEditing ? (
-                    // Edit mode - form inputs, mobile-optimized
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <div>
-                        <label className="block text-sm text-gray-700 font-medium mb-1">College/University</label>
+                  {/* Booking Stats */}
+                  <div className="bg-pink-50 p-3 rounded-lg mb-2">
+                    <h4 className="text-xs font-semibold text-pink-700 mb-2 uppercase tracking-wider text-center">Booking Statistics</h4>
+                    <div className="grid grid-cols-2 gap-2 text-center">
+                      <div className="bg-white rounded-lg p-2 shadow-sm">
+                        <p className="text-xl font-bold text-pink-600">5</p>
+                        <p className="text-xs text-gray-600">Shows Worked</p>
+                      </div>
+                      <div className="bg-white rounded-lg p-2 shadow-sm">
+                        <p className="text-xl font-bold text-pink-600">26</p>
+                        <p className="text-xs text-gray-600">Days Booked</p>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="animate-fadeIn">
+                  <div className="bg-pink-50 p-3 rounded-lg shadow-inner">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                      <div className="bg-white rounded p-2 shadow-sm">
+                        <label className="block text-pink-600 font-medium mb-1">College/University</label>
                         <input
                           type="text"
                           name="college"
-                          value={editedProfile.college}
+                          value={profileData.college}
                           onChange={handleProfileChange}
-                          className="w-full px-3 py-2 border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm"
+                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                          placeholder="Enter your college"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm text-gray-700 font-medium mb-1">Phone</label>
+                      <div className="bg-white rounded p-2 shadow-sm">
+                        <label className="block text-pink-600 font-medium mb-1">Phone</label>
                         <input
                           type="tel"
                           name="phone"
-                          value={editedProfile.phone}
+                          value={profileData.phone}
                           onChange={handleProfileChange}
-                          className="w-full px-3 py-2 border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm"
+                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                          placeholder="Enter your phone"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm text-gray-700 font-medium mb-1">Address</label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={editedProfile.address}
-                          onChange={handleProfileChange}
-                          className="w-full px-3 py-2 border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm"
-                        />
-                      </div>
-                      <div>
-                        <label className="block text-sm text-gray-700 font-medium mb-1">Shoe Size</label>
+                      <div className="bg-white rounded p-2 shadow-sm">
+                        <label className="block text-pink-600 font-medium mb-1">Shoe Size</label>
                         <input
                           type="text"
                           name="shoeSize"
-                          value={editedProfile.shoeSize}
+                          value={profileData.shoeSize}
                           onChange={handleProfileChange}
-                          className="w-full px-3 py-2 border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm"
+                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                          placeholder="Enter your shoe size"
                         />
                       </div>
-                      <div>
-                        <label className="block text-sm text-gray-700 font-medium mb-1">Dress/Suit Size</label>
+                      <div className="bg-white rounded p-2 shadow-sm">
+                        <label className="block text-pink-600 font-medium mb-1">Dress/Suit Size</label>
                         <input
                           type="text"
                           name="dressSize"
-                          value={editedProfile.dressSize}
+                          value={profileData.dressSize}
                           onChange={handleProfileChange}
-                          className="w-full px-3 py-2 border border-pink-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 text-sm"
+                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                          placeholder="Enter your dress/suit size"
                         />
                       </div>
-                    </div>
-                  ) : (
-                    // View mode - mobile-optimized display
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-sm text-pink-600 font-medium">College/University</p>
-                        <p className="font-medium text-gray-800">{profileData.college || 'Not specified'}</p>
+                      <div className="bg-white rounded p-2 shadow-sm sm:col-span-2">
+                        <label className="block text-pink-600 font-medium mb-1">Address</label>
+                        <input
+                          type="text"
+                          name="address"
+                          value={profileData.address}
+                          onChange={handleProfileChange}
+                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
+                          placeholder="Enter your address"
+                        />
                       </div>
-                      <div>
-                        <p className="text-sm text-pink-600 font-medium">Phone</p>
-                        <p className="font-medium text-gray-800">{profileData.phone || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-pink-600 font-medium">Address</p>
-                        <p className="font-medium text-gray-800">{profileData.address || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-pink-600 font-medium">Shoe Size</p>
-                        <p className="font-medium text-gray-800">{profileData.shoeSize || 'Not specified'}</p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-pink-600 font-medium">Dress/Suit Size</p>
-                        <p className="font-medium text-gray-800">{profileData.dressSize || 'Not specified'}</p>
+                      <div className="col-span-2 mt-2">
+                        <button
+                          onClick={saveProfile}
+                          className="w-full py-2 text-sm font-medium text-white bg-pink-500 rounded-md hover:bg-pink-600 focus:outline-none transition-all duration-150 shadow-sm"
+                        >
+                          Save Changes
+                        </button>
                       </div>
                     </div>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Calendar and Availability - One Column on Mobile, Two on Larger Screens */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
-          {/* Calendar Section */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 max-h-[450px] sm:max-h-[550px] overflow-y-auto">
-            <div className="px-4 sm:px-6 py-3 sm:py-5 border-b border-pink-200 bg-pink-500 sticky top-0 z-10">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
-                <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                Calendar
-              </h2>
-            </div>
-            <div className="p-3 sm:p-4">
-              <AvailabilityCalendar staffDocRef={staffDocRef} />
-            </div>
-            
-            {/* Current Bookings/Availability Summary */}
-            <div className="mt-3 sm:mt-4 border-t-2 border-pink-200 pt-3 sm:pt-4">
-              <h3 className="text-base sm:text-lg font-semibold text-pink-600 mb-2 sm:mb-3 px-3 sm:px-4">Bookings</h3>
-              <div className="px-3 sm:px-4 pb-3 sm:pb-4">
-                <BookingSummary staffDocRef={staffDocRef} staffEmail={session.user.email} staffName={session.user.name} />
-              </div>
+              )}
             </div>
           </div>
           
-          {/* Availability Section */}
-          <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-pink-500 max-h-[450px] sm:max-h-[550px] overflow-y-auto">
-            <div className="px-4 sm:px-6 py-3 sm:py-5 border-b border-pink-200 bg-pink-500 sticky top-0 z-10">
-              <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
-                <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Manage Availability
-              </h2>
-            </div>
-            <div className="p-3 sm:p-4">
-              <ShowAvailability session={session} staffDocRef={staffDocRef} />
-            </div>
+          {/* Calendar */}
+          <div>
+            <CalendarCard staffDocRef={staffDocRef} />
+          </div>
+          
+          {/* Availability */}
+          <div>
+            <AvailabilityCard session={session} staffDocRef={staffDocRef} />
+          </div>
+          
+          {/* Bookings */}
+          <div>
+            <BookingsCard 
+              staffDocRef={staffDocRef} 
+              staffEmail={session.user.email} 
+              staffName={session.user.name} 
+            />
+          </div>
+        </div>
+        
+        {/* Desktop Grid Layout */}
+        <div className="hidden lg:grid lg:grid-cols-2 gap-4">
+          <div className="mb-5">
+            <EnhancedProfileSection 
+              session={session} 
+              profileData={profileData} 
+              setProfileData={setProfileData} 
+              staffDocRef={staffDocRef} 
+            />
+          </div>
+          
+          <div className="mb-5">
+            <CalendarCard staffDocRef={staffDocRef} />
+          </div>
+          
+          <div className="mb-5">
+            <BookingsCard 
+              staffDocRef={staffDocRef} 
+              staffEmail={session.user.email} 
+              staffName={session.user.name} 
+            />
+          </div>
+          
+          <div className="mb-5">
+            <AvailabilityCard session={session} staffDocRef={staffDocRef} />
           </div>
         </div>
       </div>
+      
+      {/* Footer */}
+      <footer className="bg-white border-t border-pink-100 py-3 mt-6">
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
+          <p>&copy; {new Date().getFullYear()} The Smith Agency. All rights reserved.</p>
+        </div>
+      </footer>
     </div>
   );
 } 
