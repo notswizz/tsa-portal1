@@ -26,6 +26,7 @@ export default function StaffPortal() {
   });
   const [staffDocRef, setStaffDocRef] = useState(null);
   const [isEditingMobile, setIsEditingMobile] = useState(false);
+  const [activeMobileView, setActiveMobileView] = useState('calendar'); // New state: 'calendar', 'bookings', or 'availability'
 
   // Loading state
   useEffect(() => {
@@ -212,7 +213,6 @@ export default function StaffPortal() {
                   
                   {/* Booking Stats */}
                   <div className="bg-pink-50 p-3 rounded-lg mb-2">
-                    <h4 className="text-xs font-semibold text-pink-700 mb-2 uppercase tracking-wider text-center">Booking Statistics</h4>
                     <div className="grid grid-cols-2 gap-2 text-center">
                       <div className="bg-white rounded-lg p-2 shadow-sm">
                         <p className="text-xl font-bold text-pink-600">5</p>
@@ -299,24 +299,107 @@ export default function StaffPortal() {
             </div>
           </div>
           
-          {/* Calendar */}
-          <div>
-            <CalendarCard staffDocRef={staffDocRef} />
+          {/* Mobile View Tabs */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300">
+            <div className="grid grid-cols-3 divide-x divide-pink-100">
+              <button 
+                onClick={() => setActiveMobileView('calendar')}
+                className={`py-3 flex flex-col items-center justify-center ${
+                  activeMobileView === 'calendar' 
+                    ? 'bg-pink-500 text-white' 
+                    : 'bg-white text-pink-600 hover:bg-pink-50'
+                } transition-colors duration-150`}
+              >
+                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span className="text-xs font-medium">Calendar</span>
+              </button>
+              
+              <button 
+                onClick={() => setActiveMobileView('bookings')}
+                className={`py-3 flex flex-col items-center justify-center ${
+                  activeMobileView === 'bookings' 
+                    ? 'bg-pink-500 text-white' 
+                    : 'bg-white text-pink-600 hover:bg-pink-50'
+                } transition-colors duration-150`}
+              >
+                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span className="text-xs font-medium">Bookings</span>
+              </button>
+              
+              <button 
+                onClick={() => setActiveMobileView('availability')}
+                className={`py-3 flex flex-col items-center justify-center ${
+                  activeMobileView === 'availability' 
+                    ? 'bg-pink-500 text-white' 
+                    : 'bg-white text-pink-600 hover:bg-pink-50'
+                } transition-colors duration-150`}
+              >
+                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span className="text-xs font-medium">Availability</span>
+              </button>
+            </div>
           </div>
+          
+          {/* Dynamic Section Title */}
+          <div className="bg-white rounded-xl px-4 py-3 shadow-lg overflow-hidden border border-pink-300">
+            <h2 className="text-lg font-bold text-pink-600 flex items-center justify-center">
+              {activeMobileView === 'calendar' && (
+                <>
+                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  My Calendar
+                </>
+              )}
+              {activeMobileView === 'bookings' && (
+                <>
+                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  My Bookings
+                </>
+              )}
+              {activeMobileView === 'availability' && (
+                <>
+                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  My Availability
+                </>
+              )}
+            </h2>
+          </div>
+          
+          {/* Calendar */}
+          {activeMobileView === 'calendar' && (
+            <div className="animate-fadeIn transition-all duration-300">
+              <CalendarCard staffDocRef={staffDocRef} />
+            </div>
+          )}
           
           {/* Availability */}
-          <div>
-            <AvailabilityCard session={session} staffDocRef={staffDocRef} />
-          </div>
+          {activeMobileView === 'availability' && (
+            <div className="animate-fadeIn transition-all duration-300">
+              <AvailabilityCard session={session} staffDocRef={staffDocRef} />
+            </div>
+          )}
           
           {/* Bookings */}
-          <div>
-            <BookingsCard 
-              staffDocRef={staffDocRef} 
-              staffEmail={session.user.email} 
-              staffName={session.user.name} 
-            />
-          </div>
+          {activeMobileView === 'bookings' && (
+            <div className="animate-fadeIn transition-all duration-300">
+              <BookingsCard 
+                staffDocRef={staffDocRef} 
+                staffEmail={session.user.email} 
+                staffName={session.user.name} 
+              />
+            </div>
+          )}
         </div>
         
         {/* Desktop Grid Layout */}

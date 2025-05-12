@@ -20,8 +20,7 @@ export default function ClientDashboard() {
     email: '',
     phone: '',
     website: '',
-    category: '',
-    location: '',
+    contacts: [],
     logoUrl: '',
   });
   const [isEditing, setIsEditing] = useState(false);
@@ -30,8 +29,13 @@ export default function ClientDashboard() {
     email: '',
     phone: '',
     website: '',
-    category: '',
-    location: '',
+    contacts: [],
+  });
+  const [newContact, setNewContact] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    role: ''
   });
   const [showBookingModal, setShowBookingModal] = useState(false);
   
@@ -72,8 +76,7 @@ export default function ClientDashboard() {
               email: data.email || '',
               phone: data.phone || '',
               website: data.website || '',
-              category: data.category || '',
-              location: data.location || '',
+              contacts: Array.isArray(data.contacts) ? data.contacts : [],
               logoUrl: data.logoUrl || '',
             };
             
@@ -96,6 +99,39 @@ export default function ClientDashboard() {
     setEditedProfile(prev => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleNewContactChange = (e) => {
+    const { name, value } = e.target;
+    setNewContact(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const addContact = () => {
+    // Check if any field is filled before adding
+    if (newContact.name || newContact.email || newContact.phone || newContact.role) {
+      setEditedProfile(prev => ({
+        ...prev,
+        contacts: Array.isArray(prev.contacts) ? [...prev.contacts, { ...newContact, id: Date.now() }] : [{ ...newContact, id: Date.now() }]
+      }));
+      
+      // Reset new contact fields
+      setNewContact({
+        name: '',
+        email: '',
+        phone: '',
+        role: ''
+      });
+    }
+  };
+
+  const removeContact = (contactId) => {
+    setEditedProfile(prev => ({
+      ...prev,
+      contacts: Array.isArray(prev.contacts) ? prev.contacts.filter(contact => contact.id !== contactId) : []
     }));
   };
 
@@ -159,29 +195,29 @@ export default function ClientDashboard() {
   // Client dashboard
   return (
     <Layout title="Client Dashboard | The Smith Agency">
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white">
         {/* Header with user info */}
-        <header className="bg-white shadow-md border-b-2 border-pink-500 py-3 sticky top-0 z-50">
+        <header className="bg-white shadow-md border-b-2 border-primary py-3 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
               <Link href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-pink-500 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
                   <span className="text-white font-bold text-lg sm:text-xl">TSA</span>
                 </div>
-                <span className="text-lg sm:text-2xl font-bold text-pink-600 truncate">
+                <span className="text-lg sm:text-2xl font-display font-bold text-primary-800 truncate">
                   The Smith Agency
                 </span>
               </Link>
               
               <div className="flex items-center space-x-3 sm:space-x-6">
                 <div className="hidden md:flex space-x-6">
-                  <Link href="/" className="text-gray-600 hover:text-pink-600 transition-colors">
+                  <Link href="/" className="text-neutral-600 hover:text-primary transition-colors">
                     Home
                   </Link>
                 </div>
                 
-                <div className="flex items-center bg-white rounded-full shadow-md p-1 border border-pink-300">
-                  <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border-2 border-pink-500 bg-pink-100 flex items-center justify-center">
+                <div className="flex items-center bg-white rounded-full shadow-md p-1 border border-primary-100">
+                  <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border-2 border-primary bg-primary-50 flex items-center justify-center">
                     {clientData.logoUrl ? (
                       <Image 
                         src={clientData.logoUrl} 
@@ -191,274 +227,438 @@ export default function ClientDashboard() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <span className="text-pink-500 font-bold">
+                      <span className="text-primary font-bold">
                         {clientData.name.charAt(0)}
                       </span>
                     )}
                   </div>
                   <div className="mx-2 sm:mx-3 hidden sm:block">
-                    <p className="text-sm font-medium text-gray-700 truncate max-w-[100px] md:max-w-none">
-                      {clientData.name}
+                    <p className="text-sm font-medium text-neutral-700 truncate max-w-[100px] md:max-w-none">
+                      {clientData.name || 'Client'}
                     </p>
-                    <p className="text-xs text-pink-500">Client</p>
                   </div>
                   <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="p-1.5 rounded-full text-gray-500 hover:text-white hover:bg-pink-500 transition-colors"
-                    title="Log out"
+                    onClick={() => signOut()}
+                    className="hidden sm:block text-xs text-neutral-500 hover:text-primary ml-2 transition-colors"
                   >
-                    <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
+                    Sign out
                   </button>
                 </div>
               </div>
             </div>
           </div>
         </header>
-
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-5 sm:py-8">
-          {/* Two-column layout for desktop */}
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* Company Profile Section */}
-            <div className="lg:col-span-5 bg-white rounded-2xl shadow-xl overflow-hidden border border-pink-200 h-[calc(100vh-180px)] flex flex-col">
-              <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-pink-200 bg-pink-500 flex justify-between items-center flex-shrink-0">
-                <h2 className="text-lg sm:text-xl font-bold text-white flex items-center">
-                  <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                  </svg>
-                  Company Profile
-                </h2>
-                <button
-                  onClick={() => setIsEditing(!isEditing)}
-                  className="text-sm text-white opacity-80 hover:opacity-100 flex items-center focus:outline-none transition-all duration-200"
-                >
-                  {isEditing ? (
-                    <>
-                      <svg className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        
+        <main className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 space-y-8">
+          {/* Client Profile Section */}
+          <section className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            <div className="lg:col-span-5">
+              <div className="card animate-slideUp">
+                <div className="flex items-center justify-between card-header">
+                  <div className="flex items-center space-x-2">
+                    <span className="flex-shrink-0 p-1.5 rounded-lg bg-primary-50">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2a1 1 0 00-1-1H7a1 1 0 00-1 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
                       </svg>
-                      <span>Cancel</span>
-                    </>
+                    </span>
+                    <h2 className="page-title text-xl">Company Profile</h2>
+                  </div>
+                  
+                  {!isEditing ? (
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="inline-flex items-center text-sm text-primary hover:text-primary-dark"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                      </svg>
+                      Edit
+                    </button>
                   ) : (
-                    <>
-                      <svg className="h-3.5 w-3.5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                      </svg>
-                      <span>Edit</span>
-                    </>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setIsEditing(false)}
+                        className="text-sm text-neutral-500 hover:text-neutral-700"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        onClick={saveProfile}
+                        className="btn btn-primary py-1 px-3 text-xs"
+                      >
+                        Save
+                      </button>
+                    </div>
                   )}
-                </button>
-              </div>
-              
-              <div className="p-4 sm:p-6 overflow-y-auto">
-                {isEditing ? (
-                  <div className="animate-fadeIn mb-6">
-                    <form className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Company Name</label>
-                          <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            value={editedProfile.name}
-                            onChange={handleProfileChange}
-                            className="mt-1 focus:ring-pink-500 focus:border-pink-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
-                          <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            value={editedProfile.email}
-                            onChange={handleProfileChange}
-                            className="mt-1 focus:ring-pink-500 focus:border-pink-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone</label>
-                          <input
-                            type="tel"
-                            name="phone"
-                            id="phone"
-                            value={editedProfile.phone}
-                            onChange={handleProfileChange}
-                            className="mt-1 focus:ring-pink-500 focus:border-pink-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="website" className="block text-sm font-medium text-gray-700">Website</label>
-                          <input
-                            type="url"
-                            name="website"
-                            id="website"
-                            value={editedProfile.website}
-                            onChange={handleProfileChange}
-                            className="mt-1 focus:ring-pink-500 focus:border-pink-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="category" className="block text-sm font-medium text-gray-700">Category</label>
-                          <input
-                            type="text"
-                            name="category"
-                            id="category"
-                            value={editedProfile.category}
-                            onChange={handleProfileChange}
-                            className="mt-1 focus:ring-pink-500 focus:border-pink-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                        <div>
-                          <label htmlFor="location" className="block text-sm font-medium text-gray-700">Location</label>
-                          <input
-                            type="text"
-                            name="location"
-                            id="location"
-                            value={editedProfile.location}
-                            onChange={handleProfileChange}
-                            className="mt-1 focus:ring-pink-500 focus:border-pink-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"
-                          />
-                        </div>
-                      </div>
-                      
-                      <div className="flex justify-end space-x-3 pt-2">
-                        <button
-                          type="button"
-                          onClick={() => setIsEditing(false)}
-                          className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                        >
-                          Cancel
-                        </button>
-                        <button
-                          type="button"
-                          onClick={saveProfile}
-                          className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500"
-                        >
-                          Save
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                ) : (
-                  <div className="animate-fadeIn">
-                    <div className="mb-4">
-                      <h3 className="text-xl font-extrabold text-gray-800 mb-2 tracking-tight">{clientData.name}</h3>
-                    </div>
-                    
-                    {/* Client Statistics at the top without title */}
+                </div>
+                
+                <div className="card-body">
+                  <h3 className="text-xl font-display font-semibold text-neutral-800 mb-6">
+                    {clientData.name || "Complete Your Profile"}
+                  </h3>
+                  
+                  <div className="mb-6 bg-gradient-to-r from-primary-50 to-white p-4 rounded-lg border border-primary-100">
                     <ClientStatistics clientId={session.user.id} />
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
-                      <div className="bg-pink-50 rounded-lg p-4 transition-all duration-200 hover:shadow-md">
-                        <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Email</h4>
-                        <p className="mt-2 text-gray-900 font-medium">{clientData.email || 'Not specified'}</p>
-                      </div>
-                      <div className="bg-pink-50 rounded-lg p-4 transition-all duration-200 hover:shadow-md">
-                        <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Phone</h4>
-                        <p className="mt-2 text-gray-900 font-medium">{clientData.phone || 'Not specified'}</p>
-                      </div>
-                      <div className="bg-pink-50 rounded-lg p-4 transition-all duration-200 hover:shadow-md">
-                        <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Website</h4>
-                        <p className="mt-2 text-gray-900 font-medium">
-                          {clientData.website ? (
-                            <a 
-                              href={clientData.website.startsWith('http') ? clientData.website : `https://${clientData.website}`} 
-                              target="_blank" 
-                              rel="noopener noreferrer"
-                              className="text-pink-600 hover:text-pink-800 hover:underline"
-                            >
-                              {clientData.website}
-                            </a>
+                  </div>
+                  
+                  <div className="space-y-8">
+                    {/* Company Information */}
+                    <div className="bg-white rounded-lg shadow-sm border border-neutral-100 p-5">
+                      <h4 className="text-md font-medium text-primary-800 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2a1 1 0 00-1-1H7a1 1 0 00-1 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+                        </svg>
+                        COMPANY INFORMATION
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase">Company Name</label>
+                          {isEditing ? (
+                            <input
+                              type="text"
+                              name="name"
+                              value={editedProfile.name}
+                              onChange={handleProfileChange}
+                              className="form-input mt-1"
+                            />
                           ) : (
-                            'Not specified'
+                            <p className="text-neutral-800 font-medium text-lg">{clientData.name || "—"}</p>
                           )}
-                        </p>
-                      </div>
-                      <div className="bg-pink-50 rounded-lg p-4 transition-all duration-200 hover:shadow-md">
-                        <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Category</h4>
-                        <p className="mt-2 text-gray-900 font-medium">{clientData.category || 'Not specified'}</p>
-                      </div>
-                      <div className="col-span-2 bg-pink-50 rounded-lg p-4 transition-all duration-200 hover:shadow-md">
-                        <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wider">Location</h4>
-                        <p className="mt-2 text-gray-900 font-medium">{clientData.location || 'Not specified'}</p>
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase">Email</label>
+                          {isEditing ? (
+                            <input
+                              type="email"
+                              name="email"
+                              value={editedProfile.email}
+                              onChange={handleProfileChange}
+                              className="form-input mt-1"
+                            />
+                          ) : (
+                            <p className="text-neutral-800 font-medium">
+                              <a href={`mailto:${clientData.email}`} className="hover:text-primary transition-colors">
+                                {clientData.email || "—"}
+                              </a>
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase">Phone</label>
+                          {isEditing ? (
+                            <input
+                              type="tel"
+                              name="phone"
+                              value={editedProfile.phone}
+                              onChange={handleProfileChange}
+                              className="form-input mt-1"
+                              placeholder="e.g. 123-456-7890"
+                            />
+                          ) : (
+                            <p className="text-neutral-800 font-medium">
+                              <a href={`tel:${clientData.phone}`} className="hover:text-primary transition-colors">
+                                {clientData.phone || "—"}
+                              </a>
+                            </p>
+                          )}
+                        </div>
+                        
+                        <div className="space-y-1">
+                          <label className="text-xs font-semibold text-neutral-400 uppercase">Website</label>
+                          {isEditing ? (
+                            <input
+                              type="url"
+                              name="website"
+                              value={editedProfile.website}
+                              onChange={handleProfileChange}
+                              className="form-input mt-1"
+                              placeholder="e.g. https://yourwebsite.com"
+                            />
+                          ) : (
+                            <p className="text-neutral-800 font-medium">
+                              {clientData.website ? (
+                                <a href={clientData.website.startsWith('http') ? clientData.website : `https://${clientData.website}`} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="text-primary hover:underline transition-colors">
+                                  {clientData.website}
+                                </a>
+                              ) : "—"}
+                            </p>
+                          )}
+                        </div>
                       </div>
                     </div>
+                    
+                    {/* Contacts Section */}
+                    <div className="bg-white rounded-lg shadow-sm border border-neutral-100 p-5">
+                      <h4 className="text-md font-medium text-primary-800 mb-4 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                        </svg>
+                        CONTACTS
+                      </h4>
+                      
+                      {/* Existing Contacts */}
+                      {clientData.contacts && clientData.contacts.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                          {(isEditing ? editedProfile.contacts : clientData.contacts).map((contact, index) => (
+                            <div key={contact.id || index} className="bg-white rounded-xl p-4 border border-primary-100 shadow-sm hover:shadow-md transition-all duration-200 relative overflow-hidden">
+                              {/* Pink accent line at top */}
+                              <div className="absolute top-0 left-0 right-0 h-1 bg-primary"></div>
+                              
+                              {isEditing && (
+                                <button 
+                                  type="button" 
+                                  onClick={() => removeContact(contact.id)}
+                                  className="absolute top-3 right-3 text-neutral-400 hover:text-primary bg-white rounded-full p-1.5 shadow-md border border-neutral-200 transition-colors hover:border-primary-200 z-10"
+                                >
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                                  </svg>
+                                </button>
+                              )}
+                              <div className="flex items-start space-x-4 pt-3">
+                                <div className="h-14 w-14 rounded-full bg-primary-100 flex-shrink-0 flex items-center justify-center text-primary font-bold text-xl shadow-sm border-2 border-primary-200">
+                                  {contact.name ? contact.name.charAt(0).toUpperCase() : '?'}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="font-semibold text-lg text-neutral-900 truncate">{contact.name || 'Unnamed Contact'}</h5>
+                                  {contact.role && (
+                                    <div className="inline-block px-2.5 py-0.5 bg-primary-50 text-primary-800 text-xs font-medium rounded-full mt-1 mb-3">
+                                      {contact.role}
+                                    </div>
+                                  )}
+                                  
+                                  <div className="space-y-2 mt-3">
+                                    {contact.email && (
+                                      <div className="flex items-center group">
+                                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center mr-2 group-hover:bg-primary-100 transition-colors">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                            <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                          </svg>
+                                        </div>
+                                        <a href={`mailto:${contact.email}`} className="text-primary hover:text-primary-dark text-sm font-medium hover:underline truncate block">
+                                          {contact.email}
+                                        </a>
+                                      </div>
+                                    )}
+                                    
+                                    {contact.phone && (
+                                      <div className="flex items-center group">
+                                        <div className="w-8 h-8 rounded-full bg-primary-50 flex items-center justify-center mr-2 group-hover:bg-primary-100 transition-colors">
+                                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                          </svg>
+                                        </div>
+                                        <a href={`tel:${contact.phone}`} className="text-primary hover:text-primary-dark text-sm font-medium hover:underline truncate block">
+                                          {contact.phone}
+                                        </a>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      ) : !isEditing ? (
+                        <div className="bg-white p-6 rounded-xl border border-dashed border-primary-200 text-center">
+                          <div className="w-16 h-16 mx-auto bg-primary-50 rounded-full flex items-center justify-center mb-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                            </svg>
+                          </div>
+                          <h5 className="text-lg font-medium text-neutral-800 mb-2">No contacts added yet</h5>
+                          <p className="text-neutral-500 mb-4">Add contacts to keep track of your team members</p>
+                          {!isEditing && (
+                            <button 
+                              onClick={() => setIsEditing(true)}
+                              className="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors"
+                            >
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                              </svg>
+                              Add your first contact
+                            </button>
+                          )}
+                        </div>
+                      ) : null}
+                      
+                      {/* Add New Contact Form (when editing) */}
+                      {isEditing && (
+                        <div className="mt-6 bg-white rounded-xl p-6 border border-primary-100 shadow-sm">
+                          <h5 className="font-medium text-primary-800 mb-4 flex items-center">
+                            <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                              </svg>
+                            </div>
+                            Add New Contact
+                          </h5>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                              <label className="block text-sm font-medium text-neutral-700 mb-1">Name</label>
+                              <div className="relative rounded-md shadow-sm">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                                  </svg>
+                                </div>
+                                <input
+                                  type="text"
+                                  name="name"
+                                  value={newContact.name}
+                                  onChange={handleNewContactChange}
+                                  className="block w-full pl-10 py-2 sm:text-sm border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                  placeholder="Contact name"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-neutral-700 mb-1">Role</label>
+                              <div className="relative rounded-md shadow-sm">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clipRule="evenodd" />
+                                    <path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z" />
+                                  </svg>
+                                </div>
+                                <input
+                                  type="text"
+                                  name="role"
+                                  value={newContact.role}
+                                  onChange={handleNewContactChange}
+                                  className="block w-full pl-10 py-2 sm:text-sm border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                  placeholder="e.g. Marketing Manager"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-neutral-700 mb-1">Email</label>
+                              <div className="relative rounded-md shadow-sm">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
+                                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
+                                  </svg>
+                                </div>
+                                <input
+                                  type="email"
+                                  name="email"
+                                  value={newContact.email}
+                                  onChange={handleNewContactChange}
+                                  className="block w-full pl-10 py-2 sm:text-sm border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                  placeholder="Contact email"
+                                />
+                              </div>
+                            </div>
+                            <div>
+                              <label className="block text-sm font-medium text-neutral-700 mb-1">Phone</label>
+                              <div className="relative rounded-md shadow-sm">
+                                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                                  </svg>
+                                </div>
+                                <input
+                                  type="tel"
+                                  name="phone"
+                                  value={newContact.phone}
+                                  onChange={handleNewContactChange}
+                                  className="block w-full pl-10 py-2 sm:text-sm border-gray-300 rounded-lg focus:ring-primary focus:border-primary"
+                                  placeholder="Contact phone"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={addContact}
+                            className="mt-5 inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg shadow-sm text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors w-full md:w-auto"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                            </svg>
+                            Add Contact
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
+                </div>
               </div>
             </div>
             
-            {/* Bookings Section */}
-            <div className="lg:col-span-7 bg-white rounded-2xl shadow-xl overflow-hidden border border-pink-200 h-[calc(100vh-180px)] flex flex-col">
-              <div className="px-4 sm:px-6 py-4 sm:py-5 border-b border-pink-200 bg-pink-500 flex justify-between items-center flex-shrink-0">
-                <h3 className="text-lg sm:text-xl font-bold text-white flex items-center">
-                  <svg className="h-5 w-5 sm:h-6 sm:w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  Your Bookings
-                </h3>
-                <button
-                  onClick={openBookingModal}
-                  className="px-4 py-2 rounded-full bg-white text-pink-600 font-medium text-sm shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-pink-500"
-                >
-                  <span className="flex items-center">
-                    <svg className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            <div className="lg:col-span-7">
+              <div className="card h-full animate-slideUp">
+                <div className="flex items-center justify-between card-header">
+                  <div className="flex items-center space-x-2">
+                    <span className="flex-shrink-0 p-1.5 rounded-lg bg-primary-50">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                    <h2 className="page-title text-xl">Your Bookings</h2>
+                  </div>
+                  
+                  <button
+                    onClick={openBookingModal}
+                    className="btn btn-primary text-xs sm:text-sm"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
                     </svg>
                     New Booking
-                  </span>
-                </button>
+                  </button>
+                </div>
+                
+                <div className="card-body overflow-y-auto max-h-[600px]">
+                  <BookingsList clientId={session.user.id} />
+                </div>
               </div>
-              <div className="overflow-y-auto p-4 sm:p-6">
-                <BookingsList clientId={session.user.id} />
+            </div>
+          </section>
+        </main>
+        
+        {/* Booking Modal */}
+        {showBookingModal && (
+          <div className="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              <div className="fixed inset-0 bg-neutral-800 bg-opacity-75 transition-opacity" aria-hidden="true" onClick={closeBookingModal}></div>
+              
+              <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+              
+              <div className="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-5xl sm:w-full">
+                <div className="flex justify-between items-center bg-neutral-50 px-6 py-4 border-b border-neutral-100">
+                  <h3 className="text-lg font-display font-semibold text-neutral-800" id="modal-title">
+                    Book Staff for Your Event
+                  </h3>
+                  <button 
+                    type="button" 
+                    className="bg-white rounded-full p-1 hover:bg-neutral-100"
+                    onClick={closeBookingModal}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-neutral-500" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </button>
+                </div>
+                
+                <div className="p-6">
+                  <BookingForm 
+                    clientId={session.user.id} 
+                    closeModal={closeBookingModal} 
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
-
-      {/* Booking Modal */}
-      {showBookingModal && (
-        <div className="fixed inset-0 overflow-y-auto z-50">
-          <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div className="fixed inset-0 transition-opacity" aria-hidden="true">
-              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-
-            {/* Modal container */}
-            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-3xl sm:w-full">
-              <div className="bg-pink-500 px-4 py-3 sm:px-6 flex justify-between items-center">
-                <h3 className="text-lg leading-6 font-medium text-white">
-                  Book Staff
-                </h3>
-                <button
-                  onClick={closeBookingModal}
-                  type="button"
-                  className="bg-pink-500 rounded-md text-white hover:text-gray-200 focus:outline-none"
-                >
-                  <span className="sr-only">Close</span>
-                  <svg className="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4 max-h-[80vh] overflow-y-auto">
-                <BookingForm 
-                  session={session} 
-                  onSuccess={() => {
-                    closeBookingModal();
-                    router.push('/client/dashboard');
-                  }} 
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </Layout>
   );
 } 

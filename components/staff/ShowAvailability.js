@@ -157,11 +157,11 @@ export default function ShowAvailability({ session, staffDocRef }) {
 
   if (loading) {
     return (
-      <div className="bg-white shadow-md rounded-xl overflow-hidden border-2 border-pink-500">
+      <div className="bg-white shadow-md rounded-xl overflow-hidden border-2 border-primary">
       
-        <div className="border-t border-pink-100">
+        <div className="border-t border-primary-100">
           <div className="px-4 py-10 flex justify-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-pink-500"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-t-4 border-b-4 border-primary"></div>
           </div>
         </div>
       </div>
@@ -169,10 +169,10 @@ export default function ShowAvailability({ session, staffDocRef }) {
   }
 
   return (
-    <div className="bg-white shadow-md rounded-xl overflow-hidden border-2 border-pink-500">
+    <div className="bg-white shadow-md rounded-xl overflow-hidden border-2 border-primary">
     
       
-      <div className="border-t border-pink-100">
+      <div className="border-t border-primary-100">
         <div className="px-4 sm:px-6 py-4 sm:py-6">
           {shows.length === 0 ? (
             <div className="p-4 sm:p-8 text-center">
@@ -189,7 +189,7 @@ export default function ShowAvailability({ session, staffDocRef }) {
                 <div className="mt-1.5 sm:mt-2 relative rounded-md shadow-sm">
                   <select
                     id="show-select"
-                    className="block w-full pl-3 pr-10 py-2.5 sm:py-3 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:border-pink-500 rounded-lg transition-all"
+                    className="block w-full pl-3 pr-10 py-2.5 sm:py-3 text-base border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary rounded-lg transition-all"
                     value={selectedShow?.id || ""}
                     onChange={(e) => handleShowSelect(e.target.value)}
                   >
@@ -208,7 +208,7 @@ export default function ShowAvailability({ session, staffDocRef }) {
                   <div className="mb-3 sm:mb-5 pb-3 sm:pb-4 border-b border-gray-200">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <h4 className="text-lg sm:text-xl font-semibold text-gray-800">{selectedShow.name}</h4>
-                      <div className="text-xs sm:text-sm bg-pink-50 text-pink-600 px-2 sm:px-3 py-1 rounded-full font-medium">
+                      <div className="text-xs sm:text-sm bg-primary-50 text-primary px-2 sm:px-3 py-1 rounded-full font-medium">
                         {selectedShow.location}
                       </div>
                     </div>
@@ -224,20 +224,35 @@ export default function ShowAvailability({ session, staffDocRef }) {
                             key={date} 
                             className={`flex items-center p-2 sm:p-2.5 rounded-lg cursor-pointer transition-all touch-manipulation ${
                               isAvailable 
-                                ? 'bg-pink-50 border border-pink-200' 
+                                ? 'bg-primary-50 border border-primary-200' 
                                 : 'bg-white border border-gray-200 hover:bg-gray-50'
                             }`}
                             onClick={() => handleDateToggle(date)}
                           >
                             <div className="flex items-center w-full">
-                              <input
-                                id={`date-${date}`}
-                                name={`date-${date}`}
-                                type="checkbox"
-                                checked={isAvailable}
-                                onChange={() => {}}
-                                className="h-4 w-4 text-pink-600 focus:ring-pink-500 border-gray-300 rounded"
-                              />
+                              <div className="relative flex items-center justify-center">
+                                <div 
+                                  className={`h-5 w-5 rounded border-2 ${
+                                    isAvailable 
+                                      ? 'bg-primary border-primary' 
+                                      : 'bg-white border-gray-300'
+                                  } flex items-center justify-center`}
+                                >
+                                  {isAvailable && (
+                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                    </svg>
+                                  )}
+                                </div>
+                                <input
+                                  id={`date-${date}`}
+                                  name={`date-${date}`}
+                                  type="checkbox"
+                                  checked={isAvailable}
+                                  onChange={() => {}}
+                                  className="absolute opacity-0 h-0 w-0"
+                                />
+                              </div>
                               <label htmlFor={`date-${date}`} className="ml-3 block text-sm text-gray-800 cursor-pointer truncate w-full">
                                 {format(parseISO(date), 'EEE, MMM d, yyyy')}
                               </label>
@@ -251,7 +266,7 @@ export default function ShowAvailability({ session, staffDocRef }) {
                   <div className="flex justify-end mt-4 sm:mt-6">
                     <button
                       type="button"
-                      className="w-full sm:w-auto inline-flex items-center justify-center px-4 sm:px-5 py-2 sm:py-2.5 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-pink-500 hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 transition-all duration-150"
+                      className="w-full sm:w-auto inline-flex items-center justify-center rounded-md shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary disabled:opacity-50 transition-all duration-150"
                       onClick={saveAvailability}
                       disabled={savingAvailability}
                     >

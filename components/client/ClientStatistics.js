@@ -96,47 +96,47 @@ export default function ClientStatistics({ clientId }) {
   if (stats.isLoading) {
     return (
       <div className="flex justify-center items-center py-4">
-        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-pink-300"></div>
-        <span className="ml-2 text-xs text-gray-500">Loading statistics...</span>
+        <div className="animate-spin rounded-full h-5 w-5 border-t-2 border-b-2 border-primary-300"></div>
+        <span className="ml-2 text-xs text-neutral-500">Loading statistics...</span>
       </div>
     );
   }
   
   return (
-    <div className="mb-6">
-      <div className="flex justify-end space-x-6 mb-4">
-        <div className="flex items-center">
-          <div className="w-7 h-7 rounded-full bg-pink-50 flex items-center justify-center mr-2">
-            <svg className="h-3.5 w-3.5 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-            </svg>
+    <div className="w-full">
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="bg-primary-50 rounded-lg p-3 shadow-sm border border-primary-100 transition-all duration-200 hover:shadow">
+          <div className="flex items-center mb-1">
+            <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2a1 1 0 00-1-1H7a1 1 0 00-1 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-xs font-medium text-neutral-500">Shows</p>
           </div>
-          <div>
-            <p className="text-xs text-gray-500">Shows</p>
-            <p className="text-base font-medium text-gray-800">{stats.totalShows}</p>
-          </div>
+          <p className="text-2xl font-display font-semibold text-neutral-800 ml-9">{stats.totalShows}</p>
         </div>
         
-        <div className="flex items-center">
-          <div className="w-7 h-7 rounded-full bg-pink-50 flex items-center justify-center mr-2">
-            <svg className="h-3.5 w-3.5 text-pink-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9.5 5.5h16m-16 1v-1.5m16 1v-1.5m0 14v-10h-16v10a1 1 0 001 1h14a1 1 0 001-1z" />
-            </svg>
+        <div className="bg-primary-50 rounded-lg p-3 shadow-sm border border-primary-100 transition-all duration-200 hover:shadow">
+          <div className="flex items-center mb-1">
+            <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <p className="text-xs font-medium text-neutral-500">Days</p>
           </div>
-          <div>
-            <p className="text-xs text-gray-500">Days</p>
-            <p className="text-base font-medium text-gray-800">{stats.totalDaysBooked}</p>
-          </div>
+          <p className="text-2xl font-display font-semibold text-neutral-800 ml-9">{stats.totalDaysBooked}</p>
         </div>
       </div>
       
       {stats.staffMembers.length > 0 && (
-        <div className="bg-gray-50 rounded-lg p-3">
-          <h4 className="text-xs font-medium text-gray-500 mb-2">Staff You've Worked With</h4>
+        <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-200 shadow-sm">
+          <h4 className="section-title mb-3">Staff You've Worked With</h4>
           <div className="flex flex-wrap gap-2">
             {stats.staffMembers.map(staff => (
-              <div key={staff.id} className="flex items-center bg-white px-3 py-1.5 rounded-full shadow-sm border border-gray-100">
-                <div className="h-6 w-6 rounded-full overflow-hidden bg-pink-50 mr-2 flex items-center justify-center">
+              <div key={staff.id} className="flex items-center bg-white px-3 py-1.5 rounded-full shadow-sm border border-neutral-100 hover:border-primary-200 transition-all duration-200">
+                <div className="h-6 w-6 rounded-full overflow-hidden bg-primary-50 mr-2 flex items-center justify-center">
                   {staff.image ? (
                     <Image 
                       src={staff.image} 
@@ -146,17 +146,17 @@ export default function ClientStatistics({ clientId }) {
                       className="object-cover"
                     />
                   ) : (
-                    <span className="text-xs font-medium text-pink-500">
+                    <span className="text-xs font-medium text-primary">
                       {staff.name.charAt(0)}
                     </span>
                   )}
                 </div>
-                <span className="text-xs text-gray-700">{staff.name}</span>
+                <span className="text-xs text-neutral-700">{staff.name}</span>
               </div>
             ))}
             
             {stats.staffMembers.length === 0 && (
-              <p className="text-xs text-gray-500 italic">You haven't worked with any staff members yet.</p>
+              <p className="text-xs text-neutral-500 italic">You haven't worked with any staff members yet.</p>
             )}
           </div>
         </div>
