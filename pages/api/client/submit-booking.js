@@ -1,9 +1,7 @@
-import { getServerSession } from 'next-auth/next';
-import { authOptions } from '../auth/[...nextauth]';
 import { initializeApp, getApps } from 'firebase/app';
-import { getFirestore, collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc } from 'firebase/firestore';
 
-// Initialize Firebase
+// Firebase configuration using environment variables
 const firebaseConfig = {
   apiKey: process.env.FIREBASE_API_KEY,
   authDomain: process.env.FIREBASE_AUTH_DOMAIN,
@@ -18,84 +16,51 @@ const firebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApps(
 const db = getFirestore(firebaseApp);
 
 export default async function handler(req, res) {
-  // Get the session to check authentication
-  const session = await getServerSession(req, res, authOptions);
-
-  if (!session) {
-    return res.status(401).json({ message: 'You must be signed in to access this endpoint.' });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Only allow client role to access this endpoint
-  if (session.user.role !== 'client') {
-    return res.status(403).json({ message: 'Access denied. Client role required.' });
-  }
+  try {
+    const { bookingData } = req.body;
 
-  // Handle POST request - create a new booking
-  if (req.method === 'POST') {
-    try {
-      const clientId = session.user.id;
-      
-      // Get booking data from request body
-      const { 
-        eventDate, 
-        startTime, 
-        endTime, 
-        eventLocation, 
-        eventType, 
-        attire, 
-        notes,
-        staffCount,
-        eventDuration
-      } = req.body;
-      
-      // Validate required fields
-      if (!eventDate || !startTime || !endTime || !eventLocation || !eventType) {
-        return res.status(400).json({ message: 'Missing required fields' });
-      }
-
-      // Validate staff count
-      if (!staffCount || staffCount < 1) {
-        return res.status(400).json({ message: 'Staff count must be at least 1' });
-      }
-
-      // Validate event duration
-      if (!eventDuration || eventDuration < 1) {
-        return res.status(400).json({ message: 'Event duration must be at least 1 day' });
-      }
-      
-      // Get client data
-      const clientDocRef = doc(db, 'clients', clientId);
-      const clientDoc = await getDoc(clientDocRef);
-      const clientData = clientDoc.exists() ? clientDoc.data() : {};
-      
-      // Create booking in Firestore
-      const bookingRef = await addDoc(collection(db, 'bookings'), {
-        clientId,
-        clientName: clientData.companyName || session.user.name || session.user.email,
-        eventDate,
-        startTime,
-        endTime,
-        eventLocation,
-        eventType,
-        attire,
-        notes,
-        staffCount,
-        eventDuration,
-        status: 'pending',
-        createdAt: new Date().toISOString(),
-      });
-      
-      // Return success with booking ID
-      return res.status(201).json({ 
-        success: true, 
-        bookingId: bookingRef.id 
-      });
-    } catch (error) {
-      console.error('Error creating booking:', error);
-      return res.status(500).json({ message: 'Failed to create booking', error: error.message });
+    if (!bookingData) {
+      return res.status(400).json({ error: 'Booking data is required' });
     }
-  }
 
-  // Method not allowed
-  return res.status(405).json({ message: 'Method not allowed' });
+    // Validate required fields
+    const requiredFields = ['clientId', 'showId', 'selectedStaff', 'totalCost'];
+    for (const field of requiredFields) {
+      if (!bookingData[field]) {
+        return res.status(400).json({ error: `${field} is required` });
+      }
+    }
+
+    // Create the booking document
+    const bookingRef = await addDoc(collection(db, 'bookings'), {
+      ...bookingData,
+      createdAt: new Date().toISOString(),
+      status: 'pending',
+      paymentStatus: 'pending'
+    });
+
+    // Get client data for notification
+    const clientDoc = await getDoc(doc(db, 'clients', bookingData.clientId));
+    let clientData = {};
+    if (clientDoc.exists()) {
+      clientData = clientDoc.data();
+    }
+
+    return res.status(200).json({
+      success: true,
+      bookingId: bookingRef.id,
+      message: 'Booking created successfully'
+    });
+
+  } catch (error) {
+    console.error('Error creating booking:', error);
+    return res.status(500).json({
+      error: 'Failed to create booking',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
+  }
 } 

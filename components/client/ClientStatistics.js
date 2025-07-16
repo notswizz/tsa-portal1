@@ -132,7 +132,7 @@ export default function ClientStatistics({ clientId }) {
       
       {stats.staffMembers.length > 0 && (
         <div className="bg-neutral-50 rounded-lg p-3 border border-neutral-200 shadow-sm">
-          <h4 className="section-title mb-3">Staff You've Worked With</h4>
+          <h4 className="section-title mb-3">Staff You&apos;ve Worked With</h4>
           <div className="flex flex-wrap gap-2">
             {stats.staffMembers.map(staff => (
               <div key={staff.id} className="flex items-center bg-white px-3 py-1.5 rounded-full shadow-sm border border-neutral-100 hover:border-primary-200 transition-all duration-200">
@@ -156,7 +156,7 @@ export default function ClientStatistics({ clientId }) {
             ))}
             
             {stats.staffMembers.length === 0 && (
-              <p className="text-xs text-neutral-500 italic">You haven't worked with any staff members yet.</p>
+              <p className="text-xs text-neutral-500 italic">You haven&apos;t worked with any staff members yet.</p>
             )}
           </div>
         </div>

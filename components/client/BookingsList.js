@@ -145,7 +145,7 @@ export default function BookingsList({ clientId }) {
                 )}
                 {booking.notes && (
                   <div className="mt-3 text-sm text-neutral-600 bg-neutral-50 p-2.5 rounded-lg border border-neutral-100 italic">
-                    "{booking.notes}"
+                    &quot;{booking.notes}&quot;
                   </div>
                 )}
               </div>

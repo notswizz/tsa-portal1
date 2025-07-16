@@ -215,7 +215,7 @@ export default function ShowAvailability({ session, staffDocRef }) {
                   </div>
                   
                   <div className="mt-3 sm:mt-5 mb-4 sm:mb-6">
-                    <h4 className="text-sm font-medium text-gray-700 mb-3 sm:mb-4">Please check the dates you're available:</h4>
+                    <h4 className="text-sm font-medium text-gray-700 mb-3 sm:mb-4">Please check the dates you&apos;re available:</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 sm:gap-3">
                       {showDates.map((date) => {
                         const isAvailable = availableDates.includes(date);

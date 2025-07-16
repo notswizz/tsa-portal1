@@ -212,7 +212,7 @@ export default function BookingForm({ clientId, closeModal }) {
           </div>
           <h3 className="mt-3 text-lg font-medium text-green-800">Booking Successful!</h3>
           <p className="mt-2 text-sm text-green-600">
-            Your booking has been submitted. We'll notify you when staff are assigned.
+            Your booking has been submitted. We&apos;ll notify you when staff are assigned.
           </p>
         </div>
       ) : (

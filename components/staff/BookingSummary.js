@@ -119,7 +119,7 @@ export default function BookingSummary({ staffDocRef, staffEmail, staffName }) {
     return (
       <div className="text-center py-3 sm:py-4 text-gray-500">
         <p>No upcoming bookings found.</p>
-        <p className="text-xs sm:text-sm mt-1 sm:mt-2">You'll see your scheduled bookings here when you're assigned to events.</p>
+        <p className="text-xs sm:text-sm mt-1 sm:mt-2">You&apos;ll see your scheduled bookings here when you&apos;re assigned to events.</p>
       </div>
     );
   }

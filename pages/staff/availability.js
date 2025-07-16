@@ -128,7 +128,7 @@ export default function Availability() {
       <div className="text-center mb-6 sm:mb-10">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-gray-900">Manage Availability</h1>
         <p className="mt-3 sm:mt-4 text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
-          Set your working hours and mark days when you're unavailable.
+          Set your working hours and mark days when you&apos;re unavailable.
         </p>
       </div>
 
@@ -193,7 +193,7 @@ export default function Availability() {
         <div className="bg-white shadow overflow-hidden sm:rounded-lg">
           <div className="px-4 py-4 sm:px-6 sm:py-5">
             <h2 className="text-base sm:text-lg leading-6 font-medium text-gray-900">Unavailable Dates</h2>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">Mark specific days when you're not available.</p>
+            <p className="mt-1 max-w-2xl text-sm text-gray-500">Mark specific days when you&apos;re not available.</p>
           </div>
           <div className="border-t border-gray-200">
             <div className="bg-gray-50 px-4 py-4 sm:p-6">

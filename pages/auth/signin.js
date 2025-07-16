@@ -141,7 +141,7 @@ export default function SignIn() {
               <div className="flex items-center justify-between">
                 <div className="text-sm">
                   <Link href="/auth/register" className="font-medium text-pink-600 hover:text-pink-500">
-                    Don't have an account? Register
+                                            Don&apos;t have an account? Register
                   </Link>
                 </div>
                 <div className="text-sm">
