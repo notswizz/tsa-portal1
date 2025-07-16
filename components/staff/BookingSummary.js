@@ -227,23 +227,31 @@ export default function BookingSummary({ staffDocRef, staffEmail, staffName }) {
   };
 
   return (
-    <div className="space-y-3 sm:space-y-4">
+    <div className="space-y-5 sm:space-y-6">
       {groupedBookings.map((booking, index) => (
-        <div key={`${booking.id}-${booking.clientId}-${index}`} className="border border-pink-100 rounded-lg p-2.5 sm:p-3 bg-pink-50">
-          <div className="flex justify-between items-start flex-wrap gap-1 sm:flex-nowrap">
+        <div
+          key={`${booking.id}-${booking.clientId}-${index}`}
+          className="border border-pink-100 rounded-2xl p-4 bg-white shadow-md hover:shadow-xl transition-all duration-200 transform hover:-translate-y-1 flex flex-col gap-2 relative"
+        >
+          <div className="flex justify-between items-center flex-wrap gap-2">
             <div className="pr-2">
-              <h4 className="font-medium text-gray-900 text-sm sm:text-base">{booking.title}</h4>
-              <p className="text-xs sm:text-sm text-gray-600 mt-0.5">Client: {booking.clientName}</p>
+              <h4 className="font-bold text-lg text-pink-700 flex items-center gap-2">
+                <svg className="h-5 w-5 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                {booking.title}
+              </h4>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1 flex items-center gap-1">
+                <svg className="h-4 w-4 text-pink-300 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 15c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                Client: <span className="ml-1 text-gray-400 font-medium">{booking.clientName}</span>
+              </p>
             </div>
-            <div className="bg-pink-100 text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded whitespace-nowrap text-pink-800">
+            <div className="bg-gradient-to-r from-pink-400 to-pink-600 text-xs px-3 py-1 rounded-full shadow text-white font-bold flex items-center gap-1 ml-auto">
+              <svg className="h-4 w-4 text-white mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
               {booking.dates.length} {booking.dates.length === 1 ? 'day' : 'days'}
             </div>
           </div>
-          
-          <div className="mt-2 sm:mt-3">
-            <p className="text-xs sm:text-sm text-gray-700 ml-0 sm:ml-5">
-              {formatDateRange(booking.dates)}
-            </p>
+          <div className="mt-2 flex items-center gap-2 text-sm text-gray-700">
+            <svg className="h-4 w-4 text-pink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+            {formatDateRange(booking.dates)}
           </div>
         </div>
       ))}

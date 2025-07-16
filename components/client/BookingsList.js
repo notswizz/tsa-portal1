@@ -104,112 +104,53 @@ export default function BookingsList({ clientId }) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {bookings.map((booking) => (
-        <div key={booking.id} className="card animate-fadeIn">
-          <div className="flex justify-between items-center card-header">
-            <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-full bg-primary-50 flex items-center justify-center flex-shrink-0">
+        <div key={booking.id} className="bg-white rounded-xl shadow border border-primary-100 p-5 flex flex-col gap-3 md:flex-row md:items-center md:gap-6 animate-fadeIn">
+          {/* Left: Show Info */}
+          <div className="flex-1 min-w-0 flex flex-col gap-1">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="h-9 w-9 rounded-lg bg-primary-50 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
-              <div>
-                <h3 className="font-semibold text-neutral-900 tracking-tight">{booking.showName || 'No show name'}</h3>
-                <p className="text-xs text-neutral-500">{booking.createdAt && format(new Date(booking.createdAt), 'MMM dd, yyyy')}</p>
+              <div className="min-w-0">
+                <div className="font-semibold text-lg text-neutral-900 truncate">{booking.showName || 'No show name'}</div>
+                {booking.showData?.startDate && booking.showData?.endDate && (
+                  <div className="text-xs text-neutral-500 truncate">
+                    {format(parseISO(booking.showData.startDate), 'MMM dd')} - {format(parseISO(booking.showData.endDate), 'MMM dd, yyyy')}
+                  </div>
+                )}
               </div>
             </div>
-            <span className={`badge ${getStatusBadgeClass(booking.status)}`}>
-              {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
-            </span>
+            {booking.showData?.location && (
+              <div className="text-sm text-primary-700 font-medium truncate">{booking.showData.location}</div>
+            )}
+            {booking.notes && (
+              <div className="mt-1 text-xs text-neutral-500 italic bg-neutral-50 px-2 py-1 rounded">"{booking.notes}"</div>
+            )}
           </div>
-          
-          <div className="card-body">
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-              <div className="md:col-span-5">
-                <h4 className="section-title">Show Details</h4>
-                {booking.showData && (
-                  <div className="text-sm">
-                    <div className="font-medium text-neutral-800">{booking.showData.location}</div>
-                    <div className="mt-1">
-                      {booking.showData.startDate && booking.showData.endDate && (
-                        <div className="text-neutral-600 flex items-center">
-                          <svg className="mr-1 h-3.5 w-3.5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                          </svg>
-                          <span>{format(parseISO(booking.showData.startDate), 'MMM dd')} - {format(parseISO(booking.showData.endDate), 'MMM dd, yyyy')}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {booking.notes && (
-                  <div className="mt-3 text-sm text-neutral-600 bg-neutral-50 p-2.5 rounded-lg border border-neutral-100 italic">
-                    "{booking.notes}"
-                  </div>
-                )}
-              </div>
-              
-              <div className="md:col-span-3">
-                <h4 className="section-title">Staff Requirements</h4>
-                <div className="flex items-center">
-                  <div className="flex-shrink-0 h-8 w-8 rounded-full bg-primary-50 flex items-center justify-center mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                    </svg>
-                  </div>
-                  <div>
-                    <span className="text-sm font-medium text-neutral-800">{booking.totalStaffNeeded} Total Staff</span>
-                    <div className="mt-1">
-                      <span className="badge badge-neutral text-xs">
-                        {booking.datesNeeded?.filter(day => day.staffCount > 0).length || 0} days
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="md:col-span-4">
-                <h4 className="section-title">Staff Assignment</h4>
-                {booking.hasAssignedStaff ? (
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-green-50 flex items-center justify-center mr-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-neutral-800">
-                        {booking.uniqueStaffIds?.length || 0} Staff Assigned
-                      </div>
-                      <div className="mt-1">
-                        <span className="badge badge-success">
-                          Confirmed
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-8 w-8 rounded-full bg-yellow-50 flex items-center justify-center mr-2">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-yellow-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                      </svg>
-                    </div>
-                    <div>
-                      <div className="text-sm font-medium text-neutral-800">
-                        Waiting for staff assignment
-                      </div>
-                      <div className="mt-1">
-                        <span className="badge badge-warning">
-                          Pending
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
+
+          {/* Middle: Total Days */}
+          <div className="flex flex-col items-center justify-center min-w-[90px]">
+            <div className="flex items-center gap-1 text-primary-700 font-semibold">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+              </svg>
+              <span>{booking.datesNeeded ? booking.datesNeeded.reduce((sum, day) => sum + (day.staffCount || 0), 0) : 0}</span>
             </div>
+            <div className="text-xs text-primary-500 mt-1 font-semibold">total days</div>
+          </div>
+
+          {/* Right: Status */}
+          <div className="flex flex-col items-end justify-center min-w-[120px]">
+            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-100 mb-1 ${getStatusBadgeClass(booking.status)}`}>{booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
+            {booking.hasAssignedStaff ? (
+              <span className="text-xs text-green-600 font-medium">{booking.uniqueStaffIds?.length || 0} staff assigned</span>
+            ) : (
+              <span className="text-xs text-yellow-600 font-medium">Awaiting assignment</span>
+            )}
           </div>
         </div>
       ))}

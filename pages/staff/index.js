@@ -11,6 +11,8 @@ import EnhancedProfileSection from '../../components/staff/EnhancedProfileSectio
 import CalendarCard from '../../components/staff/CalendarCard';
 import BookingsCard from '../../components/staff/BookingsCard';
 import AvailabilityCard from '../../components/staff/AvailabilityCard';
+import FormsCard from '../../components/staff/FormsCard';
+import ResourcesCard from '../../components/staff/ResourcesCard';
 
 export default function StaffPortal() {
   const { data: session, status } = useSession();
@@ -26,7 +28,9 @@ export default function StaffPortal() {
   });
   const [staffDocRef, setStaffDocRef] = useState(null);
   const [isEditingMobile, setIsEditingMobile] = useState(false);
-  const [activeMobileView, setActiveMobileView] = useState('calendar'); // New state: 'calendar', 'bookings', or 'availability'
+  const [activeMobileView, setActiveMobileView] = useState('calendar'); // 'calendar', 'bookings', 'availability', 'forms'
+  const [activeDesktopTab, setActiveDesktopTab] = useState('availability'); // 'availability' or 'bookings'
+  const [activeBottomTab, setActiveBottomTab] = useState('forms'); // 'forms' or 'resources'
 
   // Loading state
   useEffect(() => {
@@ -301,7 +305,7 @@ export default function StaffPortal() {
           
           {/* Mobile View Tabs */}
           <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300">
-            <div className="grid grid-cols-3 divide-x divide-pink-100">
+            <div className="grid grid-cols-5 divide-x divide-pink-100">
               <button 
                 onClick={() => setActiveMobileView('calendar')}
                 className={`py-3 flex flex-col items-center justify-center ${
@@ -343,6 +347,32 @@ export default function StaffPortal() {
                 </svg>
                 <span className="text-xs font-medium">Availability</span>
               </button>
+              <button 
+                onClick={() => setActiveMobileView('forms')}
+                className={`py-3 flex flex-col items-center justify-center ${
+                  activeMobileView === 'forms' 
+                    ? 'bg-pink-500 text-white' 
+                    : 'bg-white text-pink-600 hover:bg-pink-50'
+                } transition-colors duration-150`}
+              >
+                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <span className="text-xs font-medium">Forms</span>
+              </button>
+              <button 
+                onClick={() => setActiveMobileView('resources')}
+                className={`py-3 flex flex-col items-center justify-center ${
+                  activeMobileView === 'resources' 
+                    ? 'bg-pink-500 text-white' 
+                    : 'bg-white text-pink-600 hover:bg-pink-50'
+                } transition-colors duration-150`}
+              >
+                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v3a2 2 0 002 2m12 0v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7" />
+                </svg>
+                <span className="text-xs font-medium">Resources</span>
+              </button>
             </div>
           </div>
           
@@ -373,6 +403,22 @@ export default function StaffPortal() {
                   My Availability
                 </>
               )}
+              {activeMobileView === 'forms' && (
+                <>
+                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                  Forms
+                </>
+              )}
+              {activeMobileView === 'resources' && (
+                <>
+                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v3a2 2 0 002 2m12 0v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7" />
+                  </svg>
+                  Resources
+                </>
+              )}
             </h2>
           </div>
           
@@ -400,33 +446,92 @@ export default function StaffPortal() {
               />
             </div>
           )}
+
+          {/* Forms */}
+          {activeMobileView === 'forms' && (
+            <div className="animate-fadeIn transition-all duration-300">
+              <FormsCard />
+            </div>
+          )}
+
+          {/* Resources */}
+          {activeMobileView === 'resources' && (
+            <div className="animate-fadeIn transition-all duration-300">
+              <ResourcesCard />
+            </div>
+          )}
         </div>
         
         {/* Desktop Grid Layout */}
-        <div className="hidden lg:grid lg:grid-cols-2 gap-4">
-          <div className="mb-5">
-            <EnhancedProfileSection 
-              session={session} 
-              profileData={profileData} 
-              setProfileData={setProfileData} 
-              staffDocRef={staffDocRef} 
-            />
+        <div className="hidden lg:grid grid-cols-2 gap-4">
+          {/* Left column: Profile (top), Calendar (bottom) */}
+          <div className="flex flex-col h-full gap-6">
+            <div className="h-[420px]">
+              <EnhancedProfileSection 
+                session={session} 
+                profileData={profileData} 
+                setProfileData={setProfileData} 
+                staffDocRef={staffDocRef} 
+              />
+            </div>
+            <div className="flex-1 min-h-0">
+              <CalendarCard staffDocRef={staffDocRef} />
+            </div>
           </div>
-          
-          <div className="mb-5">
-            <CalendarCard staffDocRef={staffDocRef} />
-          </div>
-          
-          <div className="mb-5">
-            <BookingsCard 
-              staffDocRef={staffDocRef} 
-              staffEmail={session.user.email} 
-              staffName={session.user.name} 
-            />
-          </div>
-          
-          <div className="mb-5">
-            <AvailabilityCard session={session} staffDocRef={staffDocRef} />
+          {/* Right column: Bookings/Availability (top), Forms/Resources (bottom) */}
+          <div className="flex flex-col h-full gap-6">
+            <div className="h-[420px] flex flex-col">
+              {/* Desktop-only toggle for Availability/Bookings */}
+              <div className="hidden lg:flex justify-center mb-4 gap-2">
+                <button
+                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
+                    ${activeDesktopTab === 'availability' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
+                  onClick={() => setActiveDesktopTab('availability')}
+                >
+                  Availability
+                </button>
+                <button
+                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
+                    ${activeDesktopTab === 'bookings' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
+                  onClick={() => setActiveDesktopTab('bookings')}
+                >
+                  Bookings
+                </button>
+              </div>
+              <div className="flex-1 min-h-0">
+                {activeDesktopTab === 'availability' ? (
+                  <AvailabilityCard session={session} staffDocRef={staffDocRef} />
+                ) : (
+                  <BookingsCard 
+                    staffDocRef={staffDocRef} 
+                    staffEmail={session.user.email} 
+                    staffName={session.user.name} 
+                  />
+                )}
+              </div>
+            </div>
+            <div className="flex-1 min-h-0 flex flex-col mt-4">
+              {/* Desktop-only toggle for Forms/Resources */}
+              <div className="hidden lg:flex justify-center mb-4 gap-2">
+                <button
+                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
+                    ${activeBottomTab === 'forms' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
+                  onClick={() => setActiveBottomTab('forms')}
+                >
+                  Forms
+                </button>
+                <button
+                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
+                    ${activeBottomTab === 'resources' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
+                  onClick={() => setActiveBottomTab('resources')}
+                >
+                  Resources
+                </button>
+              </div>
+              <div className="flex-1 min-h-0">
+                {activeBottomTab === 'forms' ? <FormsCard /> : <ResourcesCard />}
+              </div>
+            </div>
           </div>
         </div>
       </div>

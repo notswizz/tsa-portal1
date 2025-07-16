@@ -4,7 +4,7 @@ import BookingSummary from './BookingSummary';
 
 export default function BookingsCard({ staffDocRef, staffEmail, staffName }) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300 hover:border-pink-500 transition-all duration-300 h-full">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300 hover:border-pink-500 transition-all duration-300 h-full flex flex-col">
       <div className="px-3 py-2 border-b border-pink-100 bg-gradient-to-r from-pink-400 to-pink-500 sticky top-0 z-10">
         <h2 className="text-base font-bold text-white flex items-center">
           <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -13,9 +13,8 @@ export default function BookingsCard({ staffDocRef, staffEmail, staffName }) {
           Bookings
         </h2>
       </div>
-      
-      <div className="p-2 overflow-y-auto max-h-[250px] bg-gradient-to-br from-white to-pink-50">
-        <div className="bg-white rounded-lg p-3 shadow-md border border-pink-100">
+      <div className="flex-1 min-h-0 overflow-y-auto bg-gradient-to-br from-white to-pink-50">
+        <div className="bg-white rounded-lg p-3 shadow-md border border-pink-100 h-full">
           <BookingSummary 
             staffDocRef={staffDocRef} 
             staffEmail={staffEmail} 

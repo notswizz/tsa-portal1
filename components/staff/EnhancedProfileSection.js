@@ -276,10 +276,7 @@ export default function EnhancedProfileSection({ session, profileData, setProfil
                     <p className="text-pink-600 font-medium">Dress/Suit Size</p>
                     <p className="font-medium text-gray-800 mt-1">{profileData.dressSize || 'Not specified'}</p>
                   </div>
-                  <div className="bg-white rounded p-2 shadow-sm transform transition-all duration-150 hover:shadow-md hover:-translate-y-0.5 sm:col-span-2">
-                    <p className="text-pink-600 font-medium">Address</p>
-                    <p className="font-medium text-gray-800 mt-1">{profileData.address || 'Not specified'}</p>
-                  </div>
+                
                 </div>
               </div>
             )}

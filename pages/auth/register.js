@@ -7,6 +7,7 @@ export default function Register() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     companyName: '',
+    website: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -21,8 +22,6 @@ export default function Register() {
       ...prev,
       [name]: value,
     }));
-    
-    // Clear error when user is typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -33,43 +32,37 @@ export default function Register() {
 
   const validateForm = () => {
     const newErrors = {};
-    
     if (!formData.companyName.trim()) {
       newErrors.companyName = 'Company name is required';
     }
-    
+    if (formData.website && !formData.website.includes('.')) {
+      newErrors.website = 'Please enter a valid website (must contain a dot)';
+    }
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Please enter a valid email';
     }
-    
     if (!formData.password.trim()) {
       newErrors.password = 'Password is required';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Password must be at least 6 characters';
     }
-    
     if (formData.password !== formData.confirmPassword) {
       newErrors.confirmPassword = 'Passwords do not match';
     }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) {
       return;
     }
-    
     setIsLoading(true);
     setGeneralError('');
-    
     try {
-      // Create user account
       const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
@@ -77,18 +70,15 @@ export default function Register() {
         },
         body: JSON.stringify({
           companyName: formData.companyName,
+          website: formData.website,
           email: formData.email,
           password: formData.password,
         }),
       });
-      
       const data = await response.json();
-      
       if (!response.ok) {
         throw new Error(data.message || 'Failed to register');
       }
-      
-      // Redirect to sign in page
       router.push('/auth/signin?registered=true');
     } catch (error) {
       setGeneralError(error.message || 'Registration failed. Please try again.');
@@ -111,7 +101,6 @@ export default function Register() {
             </Link>
           </p>
         </div>
-
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border-2 border-pink-500">
             {generalError && (
@@ -128,7 +117,6 @@ export default function Register() {
                 </div>
               </div>
             )}
-            
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
                 <label htmlFor="companyName" className="block text-sm font-medium text-gray-700">
@@ -149,7 +137,25 @@ export default function Register() {
                   )}
                 </div>
               </div>
-
+              <div>
+                <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+                  Website (optional)
+                </label>
+                <div className="mt-1">
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    value={formData.website}
+                    onChange={handleChange}
+                    placeholder="yourcompany.com"
+                    className={`appearance-none block w-full px-3 py-2 border ${errors.website ? 'border-red-300' : 'border-gray-300'} rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-pink-500 focus:border-pink-500 sm:text-sm`}
+                  />
+                  {errors.website && (
+                    <p className="mt-2 text-sm text-red-600">{errors.website}</p>
+                  )}
+                </div>
+              </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-700">
                   Email address
@@ -170,7 +176,6 @@ export default function Register() {
                   )}
                 </div>
               </div>
-
               <div>
                 <label htmlFor="password" className="block text-sm font-medium text-gray-700">
                   Password
@@ -191,7 +196,6 @@ export default function Register() {
                   )}
                 </div>
               </div>
-
               <div>
                 <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
                   Confirm Password
@@ -212,7 +216,6 @@ export default function Register() {
                   )}
                 </div>
               </div>
-
               <div>
                 <button
                   type="submit"

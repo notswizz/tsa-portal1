@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   }
 
   // Validate request data
-  const { email, password, companyName } = req.body;
+  const { email, password, companyName, website } = req.body;
   
   if (!email || !password || !companyName) {
     res.status(400).json({ message: 'Missing required fields' });
@@ -32,7 +32,7 @@ export default async function handler(req, res) {
       category: "",
       location: "",
       phone: "",
-      website: "",
+      website: website || "",
       createdAt: now,
       updatedAt: now,
       contacts: {}
