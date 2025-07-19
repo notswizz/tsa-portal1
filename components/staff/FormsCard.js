@@ -11,7 +11,7 @@ export default function FormsCard() {
           Forms
         </h2>
       </div>
-      <div className="p-2 overflow-y-auto max-h-[400px] bg-gradient-to-br from-white to-pink-50">
+      <div className="p-2 bg-gradient-to-br from-white to-pink-50">
         <div className="bg-white rounded-lg p-3 shadow-md border border-pink-100">
           <StaffForms />
         </div>

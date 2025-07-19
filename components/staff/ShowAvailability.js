@@ -216,14 +216,30 @@ export default function ShowAvailability({ session, staffDocRef }) {
                   {availabilitySubmitted ? (
                     <div className="text-center">
                       <h4 className="text-base font-bold text-pink-700 mb-3">Your submitted availability:</h4>
-                      <div className="flex flex-wrap justify-center gap-2 mb-4">
+                      <div className="flex flex-wrap justify-center gap-2 mb-6">
                         {availableDates.map(date => (
                           <span key={date} className="inline-flex items-center px-3 py-1 rounded-full border border-pink-300 bg-pink-100 text-pink-700 text-xs font-semibold shadow-sm">
                             {format(parseISO(date), 'EEE, MMM d')}
                           </span>
                         ))}
                       </div>
-                     
+                      
+                      {/* Contact Information for Changes */}
+                      <div className="bg-gradient-to-br from-pink-50 to-white rounded-2xl p-4 border border-pink-200 shadow-sm">
+                        <div className="flex items-center justify-center mb-2">
+                          <svg className="h-5 w-5 text-pink-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                          </svg>
+                          <h5 className="text-sm font-semibold text-pink-700">Need to change your availability?</h5>
+                        </div>
+                      
+                        <div className="bg-white rounded-lg p-3 border border-pink-100 inline-block">
+                          <p className="text-xs font-medium text-gray-800">
+                            Email: <span className="text-pink-600 font-semibold">lillian@smithagency.com</span>
+                          </p>
+                          <p className="text-xs text-gray-500 mt-1">Include your name and specific changes needed</p>
+                        </div>
+                      </div>
                     </div>
                   ) : (
                     <>

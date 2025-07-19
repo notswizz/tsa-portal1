@@ -11,8 +11,7 @@ import EnhancedProfileSection from '../../components/staff/EnhancedProfileSectio
 import CalendarCard from '../../components/staff/CalendarCard';
 import BookingsCard from '../../components/staff/BookingsCard';
 import AvailabilityCard from '../../components/staff/AvailabilityCard';
-import FormsCard from '../../components/staff/FormsCard';
-import ResourcesCard from '../../components/staff/ResourcesCard';
+import ResourcesAndFormsCard from '../../components/staff/ResourcesCard';
 
 export default function StaffPortal() {
   const { data: session, status } = useSession();
@@ -450,22 +449,22 @@ export default function StaffPortal() {
           {/* Forms */}
           {activeMobileView === 'forms' && (
             <div className="animate-fadeIn transition-all duration-300">
-              <FormsCard />
+              <ResourcesAndFormsCard />
             </div>
           )}
 
           {/* Resources */}
           {activeMobileView === 'resources' && (
             <div className="animate-fadeIn transition-all duration-300">
-              <ResourcesCard />
+              <ResourcesAndFormsCard />
             </div>
           )}
         </div>
         
         {/* Desktop Grid Layout */}
         <div className="hidden lg:grid grid-cols-2 gap-4">
-          {/* Left column: Profile (top), Calendar (bottom) */}
-          <div className="flex flex-col h-full gap-6">
+          {/* Left column: Profile (top), Combined Card (bottom) */}
+          <div className="flex flex-col h-full gap-3">
             <div className="h-[420px]">
               <EnhancedProfileSection 
                 session={session} 
@@ -474,13 +473,16 @@ export default function StaffPortal() {
                 staffDocRef={staffDocRef} 
               />
             </div>
-            <div className="flex-1 min-h-0">
-              <CalendarCard staffDocRef={staffDocRef} />
+            <div className="flex-1 min-h-0 flex flex-col">
+              {/* Combined Resources and Forms Card, no toggle */}
+              <div className="flex-1 min-h-0">
+                <ResourcesAndFormsCard />
+              </div>
             </div>
           </div>
-          {/* Right column: Bookings/Availability (top), Forms/Resources (bottom) */}
+          {/* Right column: Bookings/Availability (top), Calendar (bottom) */}
           <div className="flex flex-col h-full gap-6">
-            <div className="h-[420px] flex flex-col">
+            <div className="h-[600px] flex flex-col">
               {/* Desktop-only toggle for Availability/Bookings */}
               <div className="hidden lg:flex justify-center mb-4 gap-2">
                 <button
@@ -510,27 +512,8 @@ export default function StaffPortal() {
                 )}
               </div>
             </div>
-            <div className="flex-1 min-h-0 flex flex-col mt-4">
-              {/* Desktop-only toggle for Forms/Resources */}
-              <div className="hidden lg:flex justify-center mb-4 gap-2">
-                <button
-                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
-                    ${activeBottomTab === 'forms' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
-                  onClick={() => setActiveBottomTab('forms')}
-                >
-                  Forms
-                </button>
-                <button
-                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
-                    ${activeBottomTab === 'resources' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
-                  onClick={() => setActiveBottomTab('resources')}
-                >
-                  Resources
-                </button>
-              </div>
-              <div className="flex-1 min-h-0">
-                {activeBottomTab === 'forms' ? <FormsCard /> : <ResourcesCard />}
-              </div>
+            <div className="flex-1 min-h-0">
+              <CalendarCard staffDocRef={staffDocRef} />
             </div>
           </div>
         </div>

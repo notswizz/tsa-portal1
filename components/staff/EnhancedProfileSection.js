@@ -100,7 +100,7 @@ export default function EnhancedProfileSection({ session, profileData, setProfil
           <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          My Profile
+          Profile
         </h2>
         {!isEditing && (
           <button 
@@ -112,8 +112,8 @@ export default function EnhancedProfileSection({ session, profileData, setProfil
         )}
       </div>
       
-      <div className="p-3 overflow-y-auto bg-gradient-to-br from-white to-pink-50">
-        <div className="flex flex-col md:flex-row gap-4 items-center md:items-start">
+      <div className="p-3 overflow-y-auto bg-gradient-to-br from-white to-pink-50 max-h-[360px]">
+        <div className="flex flex-col md:flex-row gap-4 items-start">
           <div className="flex-shrink-0">
             <div className="relative bg-gradient-to-br from-pink-500 to-pink-600 p-1 rounded-full shadow-lg">
               {session?.user?.image ? (
@@ -169,7 +169,7 @@ export default function EnhancedProfileSection({ session, profileData, setProfil
             
             {/* Profile Details */}
             {isEditing ? (
-              <div className="bg-pink-50 p-3 rounded-lg shadow-inner">
+              <div className="bg-pink-50 p-3 rounded-lg shadow-inner min-h-[160px]">
                 <div className="flex justify-between items-center mb-2">
                   <h4 className="text-sm font-semibold text-gray-900">Staff Details</h4>
                   <div className="flex space-x-2">
@@ -257,7 +257,7 @@ export default function EnhancedProfileSection({ session, profileData, setProfil
                 </div>
               </div>
             ) : (
-              <div className="bg-pink-50 p-3 rounded-lg shadow-inner">
+              <div className="bg-pink-50 p-3 rounded-lg shadow-inner min-h-[160px]">
                 <h4 className="text-sm font-semibold text-gray-900 mb-2">Staff Details</h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                   <div className="bg-white rounded p-2 shadow-sm transform transition-all duration-150 hover:shadow-md hover:-translate-y-0.5">
