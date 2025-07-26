@@ -104,49 +104,53 @@ export default function AvailabilityCalendar({ staffDocRef }) {
 
   if (loading) {
     return (
-      <div className="flex justify-center py-4">
-        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-pink-500"></div>
+      <div className="flex justify-center py-8">
+        <div className="animate-spin rounded-full h-6 w-6 border-2 border-pink-500 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="bg-gray-900 p-2 sm:p-4 rounded-xl shadow-xl">
-      <div className="bg-black bg-opacity-40 rounded-lg p-2 sm:p-3">
-        <div className="flex items-center justify-between mb-3 sm:mb-4">
-          <button
-            onClick={previousMonth}
-            className="p-1.5 sm:p-2 rounded-full bg-pink-500 hover:bg-pink-600 text-white transition-all shadow-md"
-          >
-            <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <h2 className="text-base sm:text-xl font-bold text-pink-500">
-            {format(currentDate, 'MMMM yyyy')}
-          </h2>
-          <button
-            onClick={nextMonth}
-            className="p-1.5 sm:p-2 rounded-full bg-pink-500 hover:bg-pink-600 text-white transition-all shadow-md"
-          >
-            <svg className="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </button>
-        </div>
-        
-        <div className="grid grid-cols-7 gap-px sm:gap-1 rounded-lg overflow-hidden border border-pink-500 shadow-lg">
-          {/* Calendar day headers - shortened for mobile */}
+    <div className="h-full flex flex-col">
+      {/* Compact Header */}
+      <div className="flex items-center justify-between mb-3">
+        <button
+          onClick={previousMonth}
+          className="p-1.5 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 transition-all"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <h2 className="text-base font-bold text-slate-800">
+          {format(currentDate, 'MMMM yyyy')}
+        </h2>
+        <button
+          onClick={nextMonth}
+          className="p-1.5 rounded-lg bg-pink-50 hover:bg-pink-100 text-pink-600 transition-all"
+        >
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      
+      {/* Calendar Grid */}
+      <div className="flex-1 bg-pink-50/50 rounded-xl border border-pink-100 p-2">
+        {/* Day Headers */}
+        <div className="grid grid-cols-7 gap-1 mb-2">
           {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((day, index) => (
-            <div key={day + index} className="bg-pink-500 py-1 sm:py-2 text-center text-xs sm:text-sm font-semibold text-white">
-              <span className="hidden sm:inline">{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][index]}</span>
-              <span className="sm:hidden">{day}</span>
+            <div key={day + index} className="text-center text-xs font-semibold text-pink-700 py-1">
+              {day}
             </div>
           ))}
-          
+        </div>
+        
+        {/* Calendar Days */}
+        <div className="grid grid-cols-7 gap-1 flex-1">
           {/* Empty cells for the start of the month */}
           {Array.from({ length: calendarDays[0]?.getDay() || 0 }).map((_, index) => (
-            <div key={`empty-start-${index}`} className="bg-gray-900 h-14 sm:h-18 p-0.5 sm:p-1"></div>
+            <div key={`empty-start-${index}`} className="h-12"></div>
           ))}
           
           {/* Calendar days */}
@@ -157,79 +161,56 @@ export default function AvailabilityCalendar({ staffDocRef }) {
             return (
               <div 
                 key={day.toISOString()} 
-                className={`relative bg-gray-900 border-b border-r border-pink-500 border-opacity-20 h-14 sm:h-18 p-0.5 sm:p-1 hover:bg-black transition-all ${
-                  isToday ? 'ring-1 sm:ring-2 ring-pink-500' : ''
+                className={`relative bg-white border border-pink-200/50 rounded-lg h-12 p-1 hover:shadow-sm transition-all text-center ${
+                  isToday ? 'ring-1 ring-pink-400 bg-pink-50' : 'hover:bg-pink-25'
                 }`}
               >
-                <div className={`font-medium text-xs sm:text-sm ${isToday ? 'text-pink-500 font-bold' : 'text-pink-200'}`}>
+                <div className={`text-xs font-medium ${
+                  isToday ? 'text-pink-600 font-bold' : 'text-slate-700'
+                }`}>
                   {format(day, 'd')}
                 </div>
                 
-                <div className="space-y-0.5 sm:space-y-1 overflow-y-auto max-h-9 sm:max-h-12">
-                  {showsOnDay.length > 0 && (
-                    <>
-                      {/* Mobile view: Just show dots for shows */}
-                      <div className="flex space-x-1 sm:hidden mt-1">
-                        {showsOnDay.slice(0, 3).map((show) => {
-                          const isAvailable = isAvailableForShow(show.id, day);
-                          return (
-                            <div 
-                              key={show.id} 
-                              className={`h-2 w-2 rounded-full ${
-                                isAvailable ? 'bg-pink-500' : 'bg-gray-600'
-                              }`}
-                              title={`${show.name} - ${isAvailable ? 'Available' : 'Not Available'}`}
-                            ></div>
-                          );
-                        })}
-                        {showsOnDay.length > 3 && (
-                          <div className="text-xs text-gray-400">+{showsOnDay.length - 3}</div>
-                        )}
-                      </div>
-                      
-                      {/* Desktop view: Show names */}
-                      <div className="hidden sm:block">
-                        {showsOnDay.map((show) => {
-                          const isAvailable = isAvailableForShow(show.id, day);
-                          
-                          return (
-                            <div 
-                              key={show.id} 
-                              className={`text-xs p-1 rounded truncate ${
-                                isAvailable 
-                                  ? 'bg-pink-500 text-white' 
-                                  : 'bg-gray-800 text-gray-400'
-                              }`}
-                              title={`${show.name} - ${isAvailable ? 'Available' : 'Not Available'}`}
-                            >
-                              {show.name}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </>
-                  )}
-                </div>
+                {/* Show indicators */}
+                {showsOnDay.length > 0 && (
+                  <div className="flex justify-center mt-0.5 space-x-0.5">
+                    {showsOnDay.slice(0, 2).map((show) => {
+                      const isAvailable = isAvailableForShow(show.id, day);
+                      return (
+                        <div 
+                          key={show.id} 
+                          className={`w-1.5 h-1.5 rounded-full ${
+                            isAvailable ? 'bg-pink-500' : 'bg-slate-300'
+                          }`}
+                          title={`${show.name} - ${isAvailable ? 'Available' : 'Not Available'}`}
+                        ></div>
+                      );
+                    })}
+                    {showsOnDay.length > 2 && (
+                      <div className="text-xs text-slate-500">+</div>
+                    )}
+                  </div>
+                )}
               </div>
             );
           })}
           
           {/* Empty cells for the end of the month */}
           {Array.from({ length: 6 - (calendarDays[calendarDays.length - 1]?.getDay() || 0) }).map((_, index) => (
-            <div key={`empty-end-${index}`} className="bg-gray-900 h-14 sm:h-18 p-0.5 sm:p-1"></div>
+            <div key={`empty-end-${index}`} className="h-12"></div>
           ))}
         </div>
-        
-        {/* Legend */}
-        <div className="mt-2 sm:mt-3 flex items-center justify-center space-x-4 sm:space-x-6 text-xs">
-          <div className="flex items-center">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-pink-500 mr-1 sm:mr-2 shadow-sm"></div>
-            <span className="text-pink-300">Available</span>
-          </div>
-          <div className="flex items-center">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded bg-gray-800 mr-1 sm:mr-2 shadow-sm"></div>
-            <span className="text-gray-400">Not Available</span>
-          </div>
+      </div>
+      
+      {/* Compact Legend */}
+      <div className="mt-2 flex items-center justify-center space-x-4 text-xs">
+        <div className="flex items-center">
+          <div className="w-2 h-2 rounded-full bg-pink-500 mr-1"></div>
+          <span className="text-slate-600">Available</span>
+        </div>
+        <div className="flex items-center">
+          <div className="w-2 h-2 rounded-full bg-slate-300 mr-1"></div>
+          <span className="text-slate-600">Not Available</span>
         </div>
       </div>
     </div>

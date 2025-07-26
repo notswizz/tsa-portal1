@@ -11,7 +11,8 @@ import EnhancedProfileSection from '../../components/staff/EnhancedProfileSectio
 import CalendarCard from '../../components/staff/CalendarCard';
 import BookingsCard from '../../components/staff/BookingsCard';
 import AvailabilityCard from '../../components/staff/AvailabilityCard';
-import ResourcesAndFormsCard from '../../components/staff/ResourcesCard';
+import FormsCard from '../../components/staff/FormsCard';
+import ResourcesOnlyCard from '../../components/staff/ResourcesOnlyCard';
 
 export default function StaffPortal() {
   const { data: session, status } = useSession();
@@ -27,9 +28,8 @@ export default function StaffPortal() {
   });
   const [staffDocRef, setStaffDocRef] = useState(null);
   const [isEditingMobile, setIsEditingMobile] = useState(false);
-  const [activeMobileView, setActiveMobileView] = useState('calendar'); // 'calendar', 'bookings', 'availability', 'forms'
-  const [activeDesktopTab, setActiveDesktopTab] = useState('availability'); // 'availability' or 'bookings'
-  const [activeBottomTab, setActiveBottomTab] = useState('forms'); // 'forms' or 'resources'
+  const [activeMobileView, setActiveMobileView] = useState('overview');
+  const [activeDesktopTab, setActiveDesktopTab] = useState('availability');
 
   // Loading state
   useEffect(() => {
@@ -120,13 +120,45 @@ export default function StaffPortal() {
     }
   };
 
+  const getIcon = (iconName) => {
+    const icons = {
+      calendar: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      ),
+      clock: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      ),
+      document: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      overview: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+        </svg>
+      )
+    };
+    return icons[iconName] || icons.overview;
+  };
+
   // If loading, show loading state
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-pink-500 mx-auto"></div>
-          <p className="mt-6 text-xl text-pink-600 font-light">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-slate-100">
+        <div className="text-center space-y-4">
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-pink-200 border-t-pink-600 rounded-full animate-spin mx-auto"></div>
+            <div className="absolute inset-0 w-16 h-16 border-4 border-transparent border-t-purple-500 rounded-full animate-spin mx-auto" style={{ animationDelay: '0.15s', animationDuration: '1.5s' }}></div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-xl font-semibold text-slate-800">Loading your portal...</h3>
+            <p className="text-slate-600">Preparing your personalized dashboard</p>
+          </div>
         </div>
       </div>
     );
@@ -135,25 +167,39 @@ export default function StaffPortal() {
   // If not logged in, show login prompt
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-white py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl border-2 border-pink-500 transform transition-all">
-          <div className="text-center">
-            <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-pink-500 to-pink-700 mb-6">The Smith Agency</h1>
-            <div className="w-full h-0.5 bg-gradient-to-r from-pink-400 to-pink-600 mx-auto mb-8"></div>
-            <p className="text-lg text-gray-600 mb-6">Welcome to your staff portal</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-pink-50 to-slate-100 py-12 px-4">
+        <div className="max-w-md w-full space-y-8">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 border border-pink-200 backdrop-blur-lg">
+            <div className="text-center space-y-6">
+              <div className="space-y-3">
+                <div className="mx-auto w-20 h-20 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <span className="text-white font-bold text-2xl">TSA</span>
+                </div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                  The Smith Agency
+                </h1>
+                <div className="h-1 w-24 bg-gradient-to-r from-pink-500 to-purple-500 rounded-full mx-auto"></div>
+              </div>
+              
+              <div className="space-y-3">
+                <h2 className="text-xl font-semibold text-slate-700">Welcome to your staff portal</h2>
+                <p className="text-slate-500">Access your schedule, manage availability, and stay connected</p>
+              </div>
+              
+              <button
+                onClick={() => signIn('google')}
+                className="w-full group relative bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02] hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-pink-300"
+              >
+                <div className="flex items-center justify-center space-x-3">
+                  <svg className="w-5 h-5" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z"/>
+                  </svg>
+                  <span>Continue with Google</span>
+                </div>
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-pink-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </button>
+            </div>
           </div>
-          
-          <button
-            onClick={() => signIn('google')}
-            className="group relative w-full flex justify-center py-4 px-4 border border-transparent text-base font-medium rounded-lg text-white bg-gradient-to-r from-pink-500 to-black hover:from-pink-600 hover:to-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition-all duration-150 ease-in-out shadow-lg hover:shadow-xl"
-          >
-            <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-              <svg className="h-5 w-5 text-pink-200 group-hover:text-white" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12.24 10.285V14.4h6.806c-.275 1.765-2.056 5.174-6.806 5.174-4.095 0-7.439-3.389-7.439-7.574s3.345-7.574 7.439-7.574c2.33 0 3.891.989 4.785 1.849l3.254-3.138C18.189 1.186 15.479 0 12.24 0c-6.635 0-12 5.365-12 12s5.365 12 12 12c6.926 0 11.52-4.869 11.52-11.726 0-.788-.085-1.39-.189-1.989H12.24z" fill="currentColor" />
-              </svg>
-            </span>
-            Sign in with Google
-          </button>
         </div>
       </div>
     );
@@ -161,346 +207,216 @@ export default function StaffPortal() {
 
   // Staff dashboard content with modular components
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-white">
+    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-slate-100">
       {/* Header */}
       <StaffHeader session={session} />
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        
         {/* Mobile View */}
-        <div className="lg:hidden space-y-4">
-          {/* Mobile Profile Summary - Only shows name, image, and booking stats */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300">
-            <div className="px-3 py-2 border-b border-pink-100 bg-gradient-to-r from-pink-500 to-pink-600 flex justify-between items-center">
-              <h2 className="text-base font-bold text-white flex items-center">
-                <svg className="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                My Profile
-              </h2>
-              <button 
-                onClick={() => setIsEditingMobile(!isEditingMobile)}
-                className="px-2 py-1 text-xs font-medium text-white bg-pink-600 bg-opacity-30 rounded-md hover:bg-opacity-50 focus:outline-none transition-all duration-150"
-              >
-                {isEditingMobile ? 'Cancel' : 'Edit Profile'}
-              </button>
+        <div className="lg:hidden space-y-6">
+          {/* Welcome Header */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-200 p-6">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                {session?.user?.image ? (
+                  <div className="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-pink-100 shadow-lg">
+                    <Image 
+                      src={session.user.image} 
+                      alt={session.user.name}
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center ring-4 ring-pink-100 shadow-lg">
+                    <span className="text-2xl font-bold text-white">
+                      {session?.user?.name?.charAt(0) || "U"}
+                    </span>
+                  </div>
+                )}
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                </div>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h2 className="text-xl font-bold text-slate-800 truncate">
+                  Welcome back, {session?.user?.name?.split(' ')[0]}!
+                </h2>
+                <p className="text-slate-600 text-sm">Ready to manage your schedule</p>
+              </div>
             </div>
-            <div className="p-3 bg-gradient-to-br from-white to-pink-50">
-              {!isEditingMobile ? (
-                <>
-                  <div className="flex items-center mb-3">
-                    <div className="relative bg-gradient-to-br from-pink-500 to-pink-600 p-1 rounded-full shadow-lg mr-4">
-                      {session?.user?.image ? (
-                        <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-white">
-                          <Image 
-                            src={session.user.image} 
-                            alt={session.user.name}
-                            width={56}
-                            height={56}
-                            className="h-full w-full object-cover"
-                          />
-                        </div>
-                      ) : (
-                        <div className="h-14 w-14 rounded-full bg-pink-200 flex items-center justify-center border-2 border-white">
-                          <span className="text-xl font-bold text-pink-700">
-                            {session?.user?.name?.charAt(0) || "U"}
-                          </span>
-                        </div>
-                      )}
+          </div>
+
+          {/* Mobile Navigation Tabs */}
+          <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-2">
+            <div className="grid grid-cols-4 gap-1">
+              {[
+                { id: 'overview', label: 'Overview', icon: 'overview' },
+                { id: 'calendar', label: 'Calendar', icon: 'calendar' },
+                { id: 'bookings', label: 'Schedule', icon: 'clock' },
+                { id: 'availability', label: 'Availability', icon: 'calendar' }
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveMobileView(tab.id)}
+                  className={`relative py-3 px-2 rounded-xl transition-all duration-300 ${
+                    activeMobileView === tab.id 
+                      ? 'bg-pink-500 text-white shadow-lg' 
+                      : 'text-slate-600 hover:bg-pink-50 hover:text-slate-800'
+                  }`}
+                >
+                  <div className="flex flex-col items-center space-y-1">
+                    <div className={`${activeMobileView === tab.id ? 'scale-110' : ''} transition-transform duration-300`}>
+                      {getIcon(tab.icon)}
                     </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-gray-800">{session?.user?.name}</h3>
-                      <p className="text-pink-500 text-xs truncate">{session?.user?.email}</p>
+                    <span className="text-xs font-medium leading-none">{tab.label}</span>
+                  </div>
+                  {activeMobileView === tab.id && (
+                    <div className="absolute inset-0 rounded-xl bg-pink-500/20"></div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile Content Sections */}
+          <div className="space-y-6">
+            {activeMobileView === 'overview' && (
+              <div className="space-y-6 animate-fadeIn">
+                {/* Quick Stats */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-6">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">Your Stats</h3>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl border border-pink-100">
+                      <div className="text-2xl font-bold text-pink-600">6</div>
+                      <div className="text-xs text-slate-600 mt-1">Shows</div>
+                    </div>
+                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
+                      <div className="text-2xl font-bold text-blue-600">29</div>
+                      <div className="text-xs text-slate-600 mt-1">Days</div>
                     </div>
                   </div>
-                  
-                  {/* Booking Stats */}
-                  <div className="bg-pink-50 p-3 rounded-lg mb-2">
-                    <div className="grid grid-cols-2 gap-2 text-center">
-                      <div className="bg-white rounded-lg p-2 shadow-sm">
-                        <p className="text-xl font-bold text-pink-600">5</p>
-                        <p className="text-xs text-gray-600">Shows Worked</p>
+                </div>
+
+                {/* Recent Activity */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-6">
+                  <h3 className="text-lg font-bold text-slate-800 mb-4">Recent Activity</h3>
+                  <div className="space-y-3">
+                    <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-xl border border-pink-100">
+                      <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
                       </div>
-                      <div className="bg-white rounded-lg p-2 shadow-sm">
-                        <p className="text-xl font-bold text-pink-600">26</p>
-                        <p className="text-xs text-gray-600">Days Booked</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-800">Availability updated</p>
+                        <p className="text-xs text-slate-500">2 hours ago</p>
                       </div>
                     </div>
-                  </div>
-                </>
-              ) : (
-                <div className="animate-fadeIn">
-                  <div className="bg-pink-50 p-3 rounded-lg shadow-inner">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                      <div className="bg-white rounded p-2 shadow-sm">
-                        <label className="block text-pink-600 font-medium mb-1">College/University</label>
-                        <input
-                          type="text"
-                          name="college"
-                          value={profileData.college}
-                          onChange={handleProfileChange}
-                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                          placeholder="Enter your college"
-                        />
+                    <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
                       </div>
-                      <div className="bg-white rounded p-2 shadow-sm">
-                        <label className="block text-pink-600 font-medium mb-1">Phone</label>
-                        <input
-                          type="tel"
-                          name="phone"
-                          value={profileData.phone}
-                          onChange={handleProfileChange}
-                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                          placeholder="Enter your phone"
-                        />
-                      </div>
-                      <div className="bg-white rounded p-2 shadow-sm">
-                        <label className="block text-pink-600 font-medium mb-1">Shoe Size</label>
-                        <input
-                          type="text"
-                          name="shoeSize"
-                          value={profileData.shoeSize}
-                          onChange={handleProfileChange}
-                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                          placeholder="Enter your shoe size"
-                        />
-                      </div>
-                      <div className="bg-white rounded p-2 shadow-sm">
-                        <label className="block text-pink-600 font-medium mb-1">Dress/Suit Size</label>
-                        <input
-                          type="text"
-                          name="dressSize"
-                          value={profileData.dressSize}
-                          onChange={handleProfileChange}
-                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                          placeholder="Enter your dress/suit size"
-                        />
-                      </div>
-                      <div className="bg-white rounded p-2 shadow-sm sm:col-span-2">
-                        <label className="block text-pink-600 font-medium mb-1">Address</label>
-                        <input
-                          type="text"
-                          name="address"
-                          value={profileData.address}
-                          onChange={handleProfileChange}
-                          className="w-full px-2 py-1 border border-pink-200 rounded focus:outline-none focus:ring-1 focus:ring-pink-500 focus:border-pink-500"
-                          placeholder="Enter your address"
-                        />
-                      </div>
-                      <div className="col-span-2 mt-2">
-                        <button
-                          onClick={saveProfile}
-                          className="w-full py-2 text-sm font-medium text-white bg-pink-500 rounded-md hover:bg-pink-600 focus:outline-none transition-all duration-150 shadow-sm"
-                        >
-                          Save Changes
-                        </button>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-slate-800">New booking assigned</p>
+                        <p className="text-xs text-slate-500">1 day ago</p>
                       </div>
                     </div>
                   </div>
                 </div>
-              )}
-            </div>
-          </div>
-          
-          {/* Mobile View Tabs */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-pink-300">
-            <div className="grid grid-cols-5 divide-x divide-pink-100">
-              <button 
-                onClick={() => setActiveMobileView('calendar')}
-                className={`py-3 flex flex-col items-center justify-center ${
-                  activeMobileView === 'calendar' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-white text-pink-600 hover:bg-pink-50'
-                } transition-colors duration-150`}
-              >
-                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <span className="text-xs font-medium">Calendar</span>
-              </button>
-              
-              <button 
-                onClick={() => setActiveMobileView('bookings')}
-                className={`py-3 flex flex-col items-center justify-center ${
-                  activeMobileView === 'bookings' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-white text-pink-600 hover:bg-pink-50'
-                } transition-colors duration-150`}
-              >
-                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span className="text-xs font-medium">Bookings</span>
-              </button>
-              
-              <button 
-                onClick={() => setActiveMobileView('availability')}
-                className={`py-3 flex flex-col items-center justify-center ${
-                  activeMobileView === 'availability' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-white text-pink-600 hover:bg-pink-50'
-                } transition-colors duration-150`}
-              >
-                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                <span className="text-xs font-medium">Availability</span>
-              </button>
-              <button 
-                onClick={() => setActiveMobileView('forms')}
-                className={`py-3 flex flex-col items-center justify-center ${
-                  activeMobileView === 'forms' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-white text-pink-600 hover:bg-pink-50'
-                } transition-colors duration-150`}
-              >
-                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
-                <span className="text-xs font-medium">Forms</span>
-              </button>
-              <button 
-                onClick={() => setActiveMobileView('resources')}
-                className={`py-3 flex flex-col items-center justify-center ${
-                  activeMobileView === 'resources' 
-                    ? 'bg-pink-500 text-white' 
-                    : 'bg-white text-pink-600 hover:bg-pink-50'
-                } transition-colors duration-150`}
-              >
-                <svg className="h-5 w-5 mb-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v3a2 2 0 002 2m12 0v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7" />
-                </svg>
-                <span className="text-xs font-medium">Resources</span>
-              </button>
-            </div>
-          </div>
-          
-          {/* Dynamic Section Title */}
-          <div className="bg-white rounded-xl px-4 py-3 shadow-lg overflow-hidden border border-pink-300">
-            <h2 className="text-lg font-bold text-pink-600 flex items-center justify-center">
-              {activeMobileView === 'calendar' && (
-                <>
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  My Calendar
-                </>
-              )}
-              {activeMobileView === 'bookings' && (
-                <>
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  My Bookings
-                </>
-              )}
-              {activeMobileView === 'availability' && (
-                <>
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  My Availability
-                </>
-              )}
-              {activeMobileView === 'forms' && (
-                <>
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                  </svg>
-                  Forms
-                </>
-              )}
-              {activeMobileView === 'resources' && (
-                <>
-                  <svg className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m2 0a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v3a2 2 0 002 2m12 0v7a2 2 0 01-2 2H7a2 2 0 01-2-2v-7" />
-                  </svg>
-                  Resources
-                </>
-              )}
-            </h2>
-          </div>
-          
-          {/* Calendar */}
-          {activeMobileView === 'calendar' && (
-            <div className="animate-fadeIn transition-all duration-300">
-              <CalendarCard staffDocRef={staffDocRef} />
-            </div>
-          )}
-          
-          {/* Availability */}
-          {activeMobileView === 'availability' && (
-            <div className="animate-fadeIn transition-all duration-300">
-              <AvailabilityCard session={session} staffDocRef={staffDocRef} />
-            </div>
-          )}
-          
-          {/* Bookings */}
-          {activeMobileView === 'bookings' && (
-            <div className="animate-fadeIn transition-all duration-300">
-              <BookingsCard 
-                staffDocRef={staffDocRef} 
-                staffEmail={session.user.email} 
-                staffName={session.user.name} 
-              />
-            </div>
-          )}
+              </div>
+            )}
 
-          {/* Forms */}
-          {activeMobileView === 'forms' && (
-            <div className="animate-fadeIn transition-all duration-300">
-              <ResourcesAndFormsCard />
-            </div>
-          )}
+            {activeMobileView === 'calendar' && (
+              <div className="animate-fadeIn">
+                <CalendarCard staffDocRef={staffDocRef} />
+              </div>
+            )}
 
-          {/* Resources */}
-          {activeMobileView === 'resources' && (
-            <div className="animate-fadeIn transition-all duration-300">
-              <ResourcesAndFormsCard />
-            </div>
-          )}
+            {activeMobileView === 'availability' && (
+              <div className="animate-fadeIn">
+                <AvailabilityCard session={session} staffDocRef={staffDocRef} />
+              </div>
+            )}
+
+            {activeMobileView === 'bookings' && (
+              <div className="animate-fadeIn">
+                <BookingsCard 
+                  staffDocRef={staffDocRef} 
+                  staffEmail={session.user.email} 
+                  staffName={session.user.name} 
+                />
+              </div>
+            )}
+          </div>
         </div>
         
         {/* Desktop Grid Layout */}
-        <div className="hidden lg:grid grid-cols-2 gap-4">
-          {/* Left column: Profile (top), Combined Card (bottom) */}
-          <div className="flex flex-col h-full gap-3">
-            <div className="h-[420px]">
-              <EnhancedProfileSection 
-                session={session} 
-                profileData={profileData} 
-                setProfileData={setProfileData} 
-                staffDocRef={staffDocRef} 
-              />
-            </div>
-            <div className="flex-1 min-h-0 flex flex-col">
-              {/* Combined Resources and Forms Card, no toggle */}
-              <div className="flex-1 min-h-0">
-                <ResourcesAndFormsCard />
+        <div className="hidden lg:block">
+          {/* Main Row - Profile+Forms, Calendar+Resources, Bookings/Availability */}
+          <div className="grid grid-cols-7 gap-6 h-[600px]">
+            {/* Left Column - Profile + Forms (2 columns) */}
+            <div className="col-span-2 space-y-4">
+              {/* Profile Section */}
+              <div className="h-[350px]">
+                <EnhancedProfileSection 
+                  session={session} 
+                  profileData={profileData} 
+                  setProfileData={setProfileData} 
+                  staffDocRef={staffDocRef} 
+                />
+              </div>
+              
+              {/* Forms Section */}
+              <div className="h-[240px]">
+                <FormsCard />
               </div>
             </div>
-          </div>
-          {/* Right column: Bookings/Availability (top), Calendar (bottom) */}
-          <div className="flex flex-col h-full gap-6">
-            <div className="h-[600px] flex flex-col">
-              {/* Desktop-only toggle for Availability/Bookings */}
-              <div className="hidden lg:flex justify-center mb-4 gap-2">
-                <button
-                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
-                    ${activeDesktopTab === 'availability' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
-                  onClick={() => setActiveDesktopTab('availability')}
-                >
-                  Availability
-                </button>
-                <button
-                  className={`px-6 py-2 rounded-full font-semibold text-sm transition-all duration-150 shadow-sm border-2 focus:outline-none focus:ring-2 focus:ring-pink-300
-                    ${activeDesktopTab === 'bookings' ? 'bg-pink-500 text-white border-pink-500' : 'bg-white text-pink-500 border-pink-200 hover:bg-pink-50'}`}
-                  onClick={() => setActiveDesktopTab('bookings')}
-                >
-                  Bookings
-                </button>
+
+            {/* Center Column - Calendar + Resources (3 columns) */}
+            <div className="col-span-3 space-y-4">
+              {/* Calendar Section - Taller to avoid scrolling */}
+              <div className="h-[420px]">
+                <CalendarCard staffDocRef={staffDocRef} />
               </div>
-              <div className="flex-1 min-h-0">
+              
+              {/* Resources Section */}
+              <div className="h-[170px]">
+                <ResourcesOnlyCard />
+              </div>
+            </div>
+
+            {/* Right Column - Bookings/Availability with Tabs (2 columns) */}
+            <div className="col-span-2 space-y-4">
+              {/* Tab Switcher */}
+              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-2">
+                <div className="flex space-x-1">
+                  <button
+                    className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                      activeDesktopTab === 'availability' 
+                        ? 'bg-pink-500 text-white shadow-lg' 
+                        : 'text-slate-600 hover:bg-pink-50'
+                    }`}
+                    onClick={() => setActiveDesktopTab('availability')}
+                  >
+                    Availability
+                  </button>
+                  <button
+                    className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                      activeDesktopTab === 'bookings' 
+                        ? 'bg-pink-500 text-white shadow-lg' 
+                        : 'text-slate-600 hover:bg-pink-50'
+                    }`}
+                    onClick={() => setActiveDesktopTab('bookings')}
+                  >
+                    Bookings
+                  </button>
+                </div>
+              </div>
+
+              {/* Content Area */}
+              <div className="h-[520px]">
                 {activeDesktopTab === 'availability' ? (
                   <AvailabilityCard session={session} staffDocRef={staffDocRef} />
                 ) : (
@@ -512,17 +428,20 @@ export default function StaffPortal() {
                 )}
               </div>
             </div>
-            <div className="flex-1 min-h-0">
-              <CalendarCard staffDocRef={staffDocRef} />
-            </div>
           </div>
         </div>
       </div>
       
       {/* Footer */}
-      <footer className="bg-white border-t border-pink-100 py-3 mt-6">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500">
-          <p>&copy; {new Date().getFullYear()} The Smith Agency. All rights reserved.</p>
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-pink-200 py-6 mt-12">
+        <div className="max-w-7xl mx-auto px-4 text-center">
+          <div className="flex items-center justify-center space-x-2 mb-2">
+            <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-xs">TSA</span>
+            </div>
+            <span className="font-semibold text-slate-700">The Smith Agency</span>
+          </div>
+          <p className="text-sm text-slate-500">&copy; {new Date().getFullYear()} The Smith Agency. All rights reserved.</p>
         </div>
       </footer>
     </div>
