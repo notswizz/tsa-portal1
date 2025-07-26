@@ -355,11 +355,11 @@ export default function StaffPortal() {
         {/* Desktop Grid Layout */}
         <div className="hidden lg:block">
           {/* Main Row - Profile+Forms, Calendar+Resources, Bookings/Availability */}
-          <div className="grid grid-cols-7 gap-6 h-[600px]">
+          <div className="grid grid-cols-7 gap-6 min-h-[calc(100vh-200px)]">
             {/* Left Column - Profile + Forms (2 columns) */}
             <div className="col-span-2 space-y-4">
               {/* Profile Section */}
-              <div className="h-[350px]">
+              <div className="h-[60%]">
                 <EnhancedProfileSection 
                   session={session} 
                   profileData={profileData} 
@@ -369,7 +369,7 @@ export default function StaffPortal() {
               </div>
               
               {/* Forms Section */}
-              <div className="h-[240px]">
+              <div className="h-[35%]">
                 <FormsCard />
               </div>
             </div>
@@ -377,12 +377,12 @@ export default function StaffPortal() {
             {/* Center Column - Calendar + Resources (3 columns) */}
             <div className="col-span-3 space-y-4">
               {/* Calendar Section - Taller to avoid scrolling */}
-              <div className="h-[420px]">
+              <div className="h-[70%]">
                 <CalendarCard staffDocRef={staffDocRef} />
               </div>
               
               {/* Resources Section */}
-              <div className="h-[170px]">
+              <div className="h-[25%]">
                 <ResourcesOnlyCard />
               </div>
             </div>
@@ -416,7 +416,7 @@ export default function StaffPortal() {
               </div>
 
               {/* Content Area */}
-              <div className="h-[520px]">
+              <div className="flex-1">
                 {activeDesktopTab === 'availability' ? (
                   <AvailabilityCard session={session} staffDocRef={staffDocRef} />
                 ) : (
@@ -433,15 +433,14 @@ export default function StaffPortal() {
       </div>
       
       {/* Footer */}
-      <footer className="bg-white/80 backdrop-blur-sm border-t border-pink-200 py-6 mt-12">
+      <footer className="bg-white/80 backdrop-blur-sm border-t border-pink-200 py-6 mt-6">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center space-x-2 mb-2">
+          <div className="flex items-center justify-center space-x-2">
             <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-xs">TSA</span>
             </div>
             <span className="font-semibold text-slate-700">The Smith Agency</span>
           </div>
-          <p className="text-sm text-slate-500">&copy; {new Date().getFullYear()} The Smith Agency. All rights reserved.</p>
         </div>
       </footer>
     </div>

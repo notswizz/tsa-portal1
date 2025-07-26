@@ -206,7 +206,66 @@ export default function ShowAvailability({ session, staffDocRef }) {
             </select>
           </div>
           
-          {selectedShow && (
+          {!selectedShow ? (
+            // Availability Rules Section
+            <div className="flex-1 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-xl p-4 border border-purple-200">
+                             <div className="text-center mb-4">
+                 <div className="w-12 h-12 mx-auto mb-3 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-full flex items-center justify-center">
+                   <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                   </svg>
+                 </div>
+                 <h3 className="text-lg font-bold text-slate-800">Availability Guidelines</h3>
+               </div>
+              
+              <div className="space-y-3">
+                {/* Standard Hours */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-purple-100">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-800 mb-1">Standard Work Hours</h4>
+                      <p className="text-xs text-slate-600">Standard day is <span className="font-semibold text-blue-600">9:00 AM - 6:00 PM</span></p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Changes Policy */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-purple-100">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="h-4 w-4 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.232 15.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-800 mb-1">Availability Changes</h4>
+                      <p className="text-xs text-slate-600">Once you submit availability, changes can only be made by emailing <span className="font-semibold text-purple-600">Lillian</span></p>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* First Day Badge */}
+                <div className="bg-white/80 backdrop-blur-sm rounded-lg p-3 border border-purple-100">
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <svg className="h-4 w-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-semibold text-slate-800 mb-1">First Day Preparation</h4>
+                      <p className="text-xs text-slate-600">Arrive <span className="font-semibold text-emerald-600">early on your first day</span> to get your badge and complete check-in</p>
+                    </div>
+                  </div>
+                </div>
+                             </div>
+            </div>
+          ) : (
             <div className="flex-1 min-h-0">
               {availabilitySubmitted ? (
                 <div className="bg-purple-50 rounded-xl p-3 border border-purple-200 h-full overflow-y-auto">

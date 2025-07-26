@@ -257,7 +257,7 @@ export default function BookingSummary({ staffDocRef, staffEmail, staffName }) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="h-[450px] overflow-y-auto space-y-3 pr-2">
       {groupedBookings.map((booking, index) => {
         const bookingStatus = getBookingStatus(booking.dates);
         
