@@ -28,7 +28,7 @@ export default function StaffPortal() {
   });
   const [staffDocRef, setStaffDocRef] = useState(null);
   const [isEditingMobile, setIsEditingMobile] = useState(false);
-  const [activeMobileView, setActiveMobileView] = useState('overview');
+  const [activeMobileView, setActiveMobileView] = useState('profile');
   const [activeDesktopTab, setActiveDesktopTab] = useState('availability');
 
   // Loading state
@@ -137,13 +137,23 @@ export default function StaffPortal() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       ),
-      overview: (
+      profile: (
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+      ),
+      forms: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+        </svg>
+      ),
+      resources: (
+        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       )
     };
-    return icons[iconName] || icons.overview;
+    return icons[iconName] || icons.profile;
   };
 
   // If loading, show loading state
@@ -216,48 +226,17 @@ export default function StaffPortal() {
         
         {/* Mobile View */}
         <div className="lg:hidden space-y-6">
-          {/* Welcome Header */}
-          <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-lg border border-pink-200 p-6">
-            <div className="flex items-center space-x-4">
-              <div className="relative">
-                {session?.user?.image ? (
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden ring-4 ring-pink-100 shadow-lg">
-                    <Image 
-                      src={session.user.image} 
-                      alt={session.user.name}
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                ) : (
-                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center ring-4 ring-pink-100 shadow-lg">
-                    <span className="text-2xl font-bold text-white">
-                      {session?.user?.name?.charAt(0) || "U"}
-                    </span>
-                  </div>
-                )}
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center">
-                  <div className="w-2 h-2 bg-white rounded-full"></div>
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h2 className="text-xl font-bold text-slate-800 truncate">
-                  Welcome back, {session?.user?.name?.split(' ')[0]}!
-                </h2>
-                <p className="text-slate-600 text-sm">Ready to manage your schedule</p>
-              </div>
-            </div>
-          </div>
 
           {/* Mobile Navigation Tabs */}
           <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-2">
-            <div className="grid grid-cols-4 gap-1">
+            <div className="grid grid-cols-3 gap-1">
               {[
-                { id: 'overview', label: 'Overview', icon: 'overview' },
+                { id: 'profile', label: 'Profile', icon: 'profile' },
                 { id: 'calendar', label: 'Calendar', icon: 'calendar' },
-                { id: 'bookings', label: 'Schedule', icon: 'clock' },
-                { id: 'availability', label: 'Availability', icon: 'calendar' }
+                { id: 'bookings', label: 'Bookings', icon: 'clock' },
+                { id: 'availability', label: 'Availability', icon: 'calendar' },
+                { id: 'forms', label: 'Forms', icon: 'forms' },
+                { id: 'resources', label: 'Resources', icon: 'resources' }
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -284,47 +263,14 @@ export default function StaffPortal() {
 
           {/* Mobile Content Sections */}
           <div className="space-y-6">
-            {activeMobileView === 'overview' && (
-              <div className="space-y-6 animate-fadeIn">
-                {/* Quick Stats */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-6">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">Your Stats</h3>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-purple-50 rounded-xl border border-pink-100">
-                      <div className="text-2xl font-bold text-pink-600">6</div>
-                      <div className="text-xs text-slate-600 mt-1">Shows</div>
-                    </div>
-                    <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
-                      <div className="text-2xl font-bold text-blue-600">29</div>
-                      <div className="text-xs text-slate-600 mt-1">Days</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Recent Activity */}
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-6">
-                  <h3 className="text-lg font-bold text-slate-800 mb-4">Recent Activity</h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center space-x-3 p-3 bg-pink-50 rounded-xl border border-pink-100">
-                      <div className="w-8 h-8 rounded-lg bg-pink-100 flex items-center justify-center">
-                        <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800">Availability updated</p>
-                        <p className="text-xs text-slate-500">2 hours ago</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-3 p-3 bg-blue-50 rounded-xl border border-blue-100">
-                      <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-slate-800">New booking assigned</p>
-                        <p className="text-xs text-slate-500">1 day ago</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            {activeMobileView === 'profile' && (
+              <div className="animate-fadeIn">
+                <EnhancedProfileSection 
+                  session={session} 
+                  profileData={profileData} 
+                  setProfileData={setProfileData} 
+                  staffDocRef={staffDocRef} 
+                />
               </div>
             )}
 
@@ -347,6 +293,18 @@ export default function StaffPortal() {
                   staffEmail={session.user.email} 
                   staffName={session.user.name} 
                 />
+              </div>
+            )}
+
+            {activeMobileView === 'forms' && (
+              <div className="animate-fadeIn">
+                <FormsCard />
+              </div>
+            )}
+
+            {activeMobileView === 'resources' && (
+              <div className="animate-fadeIn">
+                <ResourcesOnlyCard />
               </div>
             )}
           </div>

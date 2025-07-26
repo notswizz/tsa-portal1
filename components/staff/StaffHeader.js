@@ -16,30 +16,31 @@ export default function StaffHeader({ session }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-lg border-b border-pink-200 shadow-lg">
+    <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-pink-50/50 to-white backdrop-blur-xl border-b border-pink-200/60 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo Section */}
+          {/* Enhanced Logo Section */}
           <Link href="/staff" className="flex items-center space-x-3 group">
             <div className="relative">
-              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg group-hover:shadow-xl transition-all duration-300 group-hover:scale-105">
-                <span className="text-white font-bold text-lg">TSA</span>
+              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-pink-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105 ring-2 ring-white/50">
+                <span className="text-white font-bold text-lg tracking-tight">TSA</span>
               </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/30 to-purple-600/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <div className="hidden sm:block">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+            <div className="flex flex-col">
+              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-pink-600 via-pink-700 to-purple-600 bg-clip-text text-transparent leading-tight">
                 The Smith Agency
               </h1>
-              <p className="text-xs text-slate-500 font-medium">Staff Portal</p>
+              <p className="text-xs text-slate-500 font-medium hidden sm:block">Staff Portal</p>
+              <p className="text-xs text-pink-600/70 font-medium sm:hidden">Staff Portal</p>
             </div>
           </Link>
           
-          {/* Mobile menu button */}
+          {/* Enhanced Mobile menu button */}
           <div className="md:hidden">
             <button 
               onClick={toggleMenu}
-              className="p-2 rounded-xl text-pink-600 hover:text-pink-800 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-500 transition-all duration-200"
+              className="p-3 rounded-2xl text-pink-600 hover:text-pink-800 hover:bg-gradient-to-br from-pink-50 to-purple-50 focus:outline-none focus:ring-2 focus:ring-pink-400/50 transition-all duration-300 shadow-lg hover:shadow-xl bg-white/70 backdrop-blur-sm border border-pink-200/50"
             >
               {menuOpen ? (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -57,12 +58,6 @@ export default function StaffHeader({ session }) {
           <div className="hidden md:flex items-center space-x-6">
             {/* Navigation Links */}
             <nav className="flex items-center space-x-1">
-              <Link 
-                href="/" 
-                className="px-4 py-2 rounded-xl text-slate-600 hover:text-slate-800 hover:bg-pink-50 transition-all duration-200 font-medium"
-              >
-                Home
-              </Link>
               <Link 
                 href="/staff" 
                 className="px-4 py-2 rounded-xl text-pink-600 bg-pink-50 font-medium"
@@ -98,7 +93,6 @@ export default function StaffHeader({ session }) {
                   <p className="text-sm font-semibold text-slate-800 truncate max-w-32">
                     {session?.user?.name}
                   </p>
-                  <p className="text-xs text-slate-500">Staff Member</p>
                 </div>
                 <svg 
                   className={`w-4 h-4 text-pink-400 transition-transform duration-200 ${dropdownOpen ? 'rotate-180' : ''}`} 
@@ -178,65 +172,54 @@ export default function StaffHeader({ session }) {
           </div>
         </div>
         
-        {/* Mobile menu dropdown */}
+        {/* Enhanced Mobile menu dropdown */}
         {menuOpen && (
           <div className="md:hidden animate-fadeIn">
-            <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 mt-2 mb-4 overflow-hidden">
-              {/* Mobile User Info */}
-              <div className="px-4 py-4 border-b border-pink-100 bg-gradient-to-r from-pink-50 to-purple-50">
-                <div className="flex items-center space-x-3">
+            <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-pink-200/60 mt-3 mb-4 overflow-hidden ring-1 ring-pink-100/50">
+              {/* Enhanced Mobile User Info */}
+              <div className="px-5 py-5 border-b border-pink-100/80 bg-gradient-to-br from-pink-50/80 via-purple-50/60 to-pink-50/80">
+                <div className="flex items-center space-x-4">
                   {session?.user?.image ? (
-                    <div className="w-12 h-12 rounded-xl overflow-hidden ring-2 ring-pink-100 shadow-lg">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden ring-3 ring-pink-200/60 shadow-xl">
                       <Image 
                         src={session.user.image} 
                         alt={session.user.name}
-                        width={48}
-                        height={48}
+                        width={56}
+                        height={56}
                         className="w-full h-full object-cover"
                       />
                     </div>
                   ) : (
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center ring-2 ring-pink-100 shadow-lg">
-                      <span className="text-white font-bold text-lg">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 via-pink-600 to-purple-600 flex items-center justify-center ring-3 ring-pink-200/60 shadow-xl">
+                      <span className="text-white font-bold text-xl">
                         {session?.user?.name?.charAt(0) || "U"}
                       </span>
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-800 truncate">
+                    <p className="text-base font-bold text-slate-800 truncate">
                       {session?.user?.name}
                     </p>
-                    <p className="text-xs text-slate-500 truncate">
+                    <p className="text-sm text-slate-600 truncate mt-0.5">
                       {session?.user?.email}
                     </p>
                   </div>
                 </div>
               </div>
               
-              {/* Mobile Navigation */}
-              <nav className="py-2">
-                <Link 
-                  href="/" 
-                  className="block px-4 py-3 text-slate-700 hover:bg-pink-50 hover:text-slate-900 transition-colors duration-200"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    <span className="font-medium">Home</span>
-                  </div>
-                </Link>
-                
+              {/* Enhanced Mobile Navigation */}
+              <nav className="p-3 space-y-2">
                 <Link 
                   href="/staff" 
-                  className="block px-4 py-3 text-pink-600 bg-pink-50 font-medium"
+                  className="block px-4 py-4 text-pink-700 bg-gradient-to-r from-pink-50 to-purple-50 font-semibold rounded-2xl shadow-sm border border-pink-100/50 hover:shadow-md transition-all duration-300"
                   onClick={() => setMenuOpen(false)}
                 >
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                    </svg>
+                    <div className="w-8 h-8 rounded-xl bg-pink-100 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-pink-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                      </svg>
+                    </div>
                     <span>Dashboard</span>
                   </div>
                 </Link>
@@ -246,13 +229,15 @@ export default function StaffHeader({ session }) {
                     setMenuOpen(false);
                     signOut({ callbackUrl: '/' });
                   }}
-                  className="block w-full text-left px-4 py-3 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors duration-200"
+                  className="block w-full text-left px-4 py-4 text-red-700 hover:bg-red-50 hover:text-red-800 transition-all duration-300 rounded-2xl font-semibold border border-red-100/50 hover:shadow-md"
                 >
                   <div className="flex items-center space-x-3">
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                    </svg>
-                    <span className="font-medium">Sign Out</span>
+                    <div className="w-8 h-8 rounded-xl bg-red-100 flex items-center justify-center">
+                      <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                      </svg>
+                    </div>
+                    <span>Sign Out</span>
                   </div>
                 </button>
               </nav>

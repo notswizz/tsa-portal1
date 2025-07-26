@@ -269,11 +269,6 @@ export default function ClientDashboard() {
                 </span>
               </a>
               <div className="flex items-center space-x-3 sm:space-x-6">
-                <div className="hidden md:flex space-x-6">
-                  <a href="/" className="text-neutral-600 hover:text-primary transition-colors">
-                    Home
-                  </a>
-                </div>
                 <div className="flex items-center bg-white rounded-full shadow-md p-1 border border-primary-100">
                   <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-full overflow-hidden border-2 border-primary bg-primary-50 flex items-center justify-center">
                     {clientData.logoUrl ? (

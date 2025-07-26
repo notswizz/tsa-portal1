@@ -68,22 +68,42 @@ export default function ResourcesOnlyCard() {
           <div className="absolute top-0 right-0 w-12 h-12 bg-white/10 rounded-full -translate-y-6 translate-x-6"></div>
         </div>
 
-        {/* Horizontal Scrollable Line of Resource Icons */}
-        <div className="flex-1 p-3 bg-gradient-to-br from-white to-orange-50/30 overflow-x-auto">
-          <div className="flex space-x-3 h-full items-center min-w-max">
+        {/* Responsive Resources Layout */}
+        <div className="flex-1 p-3 bg-gradient-to-br from-white to-orange-50/30">
+          {/* Mobile: 2x2 Grid */}
+          <div className="md:hidden grid grid-cols-2 gap-3 h-full">
             {resources.map((resource, index) => (
               <button
                 key={resource.id}
                 onClick={() => openModal(resource)}
-                className="group bg-white/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-orange-200 hover:shadow-md transition-all duration-300 transform hover:scale-[1.05] flex flex-col items-center justify-center text-center min-w-[70px] h-20 flex-shrink-0"
+                className="group bg-white/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-orange-200 hover:shadow-md transition-all duration-300 transform hover:scale-[1.05] flex flex-col items-center justify-center text-center h-full"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${resource.color} flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${resource.color} flex items-center justify-center mb-2 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                   <span className="text-lg">{resource.icon}</span>
                 </div>
                 <h3 className="font-semibold text-slate-800 text-xs leading-tight">{resource.title}</h3>
               </button>
             ))}
+          </div>
+
+          {/* Desktop: Horizontal Scrollable Line */}
+          <div className="hidden md:block overflow-x-auto h-full">
+            <div className="flex space-x-3 h-full items-center min-w-max">
+              {resources.map((resource, index) => (
+                <button
+                  key={resource.id}
+                  onClick={() => openModal(resource)}
+                  className="group bg-white/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-orange-200 hover:shadow-md transition-all duration-300 transform hover:scale-[1.05] flex flex-col items-center justify-center text-center min-w-[70px] h-20 flex-shrink-0"
+                  style={{ animationDelay: `${index * 100}ms` }}
+                >
+                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${resource.color} flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                    <span className="text-lg">{resource.icon}</span>
+                  </div>
+                  <h3 className="font-semibold text-slate-800 text-xs leading-tight">{resource.title}</h3>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
