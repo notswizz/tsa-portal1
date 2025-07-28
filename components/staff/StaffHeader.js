@@ -16,19 +16,25 @@ export default function StaffHeader({ session }) {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-gradient-to-r from-white via-pink-50/50 to-white backdrop-blur-xl border-b border-pink-200/60 shadow-xl">
+    <header className="sticky top-0 z-50 bg-white backdrop-blur-xl border-b border-pink-200/60 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Enhanced Logo Section */}
           <Link href="/staff" className="flex items-center space-x-3 group">
             <div className="relative">
-              <div className="w-12 h-12 bg-gradient-to-br from-pink-500 via-pink-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105 ring-2 ring-white/50">
-                <span className="text-white font-bold text-lg tracking-tight">TSA</span>
+              <div className="w-12 h-12 rounded-2xl overflow-hidden shadow-xl group-hover:shadow-2xl transition-all duration-300 group-hover:scale-105 ring-2 ring-white/50">
+                <Image
+                  src="/tsa.png"
+                  alt="The Smith Agency Logo"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/30 to-purple-600/30 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute inset-0 bg-pink-500/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
             <div className="flex flex-col">
-              <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-pink-600 via-pink-700 to-purple-600 bg-clip-text text-transparent leading-tight">
+              <h1 className="text-lg sm:text-xl font-bold text-pink-600 leading-tight">
                 The Smith Agency
               </h1>
               <p className="text-xs text-slate-500 font-medium hidden sm:block">Staff Portal</p>
@@ -40,7 +46,7 @@ export default function StaffHeader({ session }) {
           <div className="md:hidden">
             <button 
               onClick={toggleMenu}
-              className="p-3 rounded-2xl text-pink-600 hover:text-pink-800 hover:bg-gradient-to-br from-pink-50 to-purple-50 focus:outline-none focus:ring-2 focus:ring-pink-400/50 transition-all duration-300 shadow-lg hover:shadow-xl bg-white/70 backdrop-blur-sm border border-pink-200/50"
+              className="p-3 rounded-2xl text-pink-600 hover:text-pink-800 hover:bg-pink-50 focus:outline-none focus:ring-2 focus:ring-pink-400/50 transition-all duration-300 shadow-lg hover:shadow-xl bg-white/70 backdrop-blur-sm border border-pink-200/50"
             >
               {menuOpen ? (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,7 +89,7 @@ export default function StaffHeader({ session }) {
                     />
                   </div>
                 ) : (
-                  <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-pink-500 flex items-center justify-center">
                     <span className="text-white font-medium text-sm">
                       {session?.user?.name?.charAt(0) || "U"}
                     </span>
@@ -120,7 +126,7 @@ export default function StaffHeader({ session }) {
                           />
                         </div>
                       ) : (
-                        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center">
+                        <div className="w-12 h-12 rounded-xl bg-pink-500 flex items-center justify-center">
                           <span className="text-white font-bold text-lg">
                             {session?.user?.name?.charAt(0) || "U"}
                           </span>
@@ -177,7 +183,7 @@ export default function StaffHeader({ session }) {
           <div className="md:hidden animate-fadeIn">
             <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl border border-pink-200/60 mt-3 mb-4 overflow-hidden ring-1 ring-pink-100/50">
               {/* Enhanced Mobile User Info */}
-              <div className="px-5 py-5 border-b border-pink-100/80 bg-gradient-to-br from-pink-50/80 via-purple-50/60 to-pink-50/80">
+              <div className="px-5 py-5 border-b border-pink-100/80 bg-pink-50/80">
                 <div className="flex items-center space-x-4">
                   {session?.user?.image ? (
                     <div className="w-14 h-14 rounded-2xl overflow-hidden ring-3 ring-pink-200/60 shadow-xl">
@@ -190,7 +196,7 @@ export default function StaffHeader({ session }) {
                       />
                     </div>
                   ) : (
-                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 via-pink-600 to-purple-600 flex items-center justify-center ring-3 ring-pink-200/60 shadow-xl">
+                    <div className="w-14 h-14 rounded-2xl bg-pink-500 flex items-center justify-center ring-3 ring-pink-200/60 shadow-xl">
                       <span className="text-white font-bold text-xl">
                         {session?.user?.name?.charAt(0) || "U"}
                       </span>
@@ -211,7 +217,7 @@ export default function StaffHeader({ session }) {
               <nav className="p-3 space-y-2">
                 <Link 
                   href="/staff" 
-                  className="block px-4 py-4 text-pink-700 bg-gradient-to-r from-pink-50 to-purple-50 font-semibold rounded-2xl shadow-sm border border-pink-100/50 hover:shadow-md transition-all duration-300"
+                  className="block px-4 py-4 text-pink-700 bg-pink-50 font-semibold rounded-2xl shadow-sm border border-pink-100/50 hover:shadow-md transition-all duration-300"
                   onClick={() => setMenuOpen(false)}
                 >
                   <div className="flex items-center space-x-3">

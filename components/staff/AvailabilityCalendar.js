@@ -201,18 +201,6 @@ export default function AvailabilityCalendar({ staffDocRef }) {
           ))}
         </div>
       </div>
-      
-      {/* Compact Legend */}
-      <div className="mt-2 flex items-center justify-center space-x-4 text-xs">
-        <div className="flex items-center">
-          <div className="w-2 h-2 rounded-full bg-pink-500 mr-1"></div>
-          <span className="text-slate-600">Available</span>
-        </div>
-        <div className="flex items-center">
-          <div className="w-2 h-2 rounded-full bg-slate-300 mr-1"></div>
-          <span className="text-slate-600">Not Available</span>
-        </div>
-      </div>
     </div>
   );
 } 

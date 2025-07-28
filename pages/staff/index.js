@@ -4,6 +4,7 @@ import { useSession, signIn } from 'next-auth/react';
 import { db } from '../../lib/firebase';
 import { doc, getDoc, collection, getDocs, updateDoc } from 'firebase/firestore';
 import Image from 'next/image';
+import Head from 'next/head';
 
 // Components
 import StaffHeader from '../../components/staff/StaffHeader';
@@ -27,9 +28,38 @@ export default function StaffPortal() {
     phone: '',
   });
   const [staffDocRef, setStaffDocRef] = useState(null);
+  const [staffData, setStaffData] = useState(null);
   const [isEditingMobile, setIsEditingMobile] = useState(false);
   const [activeMobileView, setActiveMobileView] = useState('profile');
   const [activeDesktopTab, setActiveDesktopTab] = useState('availability');
+  const [completedForms, setCompletedForms] = useState([
+    {
+      completed: false,
+      dateCompleted: null,
+      dateEnabled: "2025-07-27T02:48:43.018Z",
+      enabled: true,
+      formType: "application"
+    },
+    {
+      completed: false,
+      dateCompleted: null,
+      dateEnabled: null,
+      enabled: false,
+      formType: "interview"
+    }
+  ]);
+
+  // Handle form completion
+  const handleFormComplete = (formType, formData) => {
+    setCompletedForms(prev => 
+      prev.map(form => 
+        form.formType === formType 
+          ? { ...form, completed: true, dateCompleted: new Date().toISOString() }
+          : form
+      )
+    );
+    console.log(`${formType} form completed with data:`, formData);
+  };
 
   // Loading state
   useEffect(() => {
@@ -74,6 +104,9 @@ export default function StaffPortal() {
             // If document exists, update state with data
             const data = staffDoc.data();
             
+            // Store the full staff data for use in components
+            setStaffData(data);
+            
             const profileInfo = {
               college: data.college || '',
               shoeSize: data.shoeSize || '',
@@ -84,6 +117,92 @@ export default function StaffPortal() {
             };
             
             setProfileData(profileInfo);
+            
+            // Update form completion states from Firebase data
+            // Check if completedForms array exists in Firebase data
+            if (data.completedForms && Array.isArray(data.completedForms)) {
+              // Use the completedForms array from Firebase directly
+              setCompletedForms(data.completedForms.map(firebaseForm => {
+                // Handle timestamp conversion for dates
+                let completedDate = null;
+                let enabledDate = null;
+                
+                if (firebaseForm.dateCompleted) {
+                  const completedDateField = firebaseForm.dateCompleted;
+                  if (typeof completedDateField.toDate === 'function') {
+                    completedDate = completedDateField.toDate().toISOString();
+                  } else if (completedDateField instanceof Date) {
+                    completedDate = completedDateField.toISOString();
+                  } else if (typeof completedDateField === 'string') {
+                    completedDate = completedDateField;
+                  } else if (completedDateField.seconds) {
+                    completedDate = new Date(completedDateField.seconds * 1000).toISOString();
+                  }
+                }
+                
+                if (firebaseForm.dateEnabled) {
+                  const enabledDateField = firebaseForm.dateEnabled;
+                  if (typeof enabledDateField.toDate === 'function') {
+                    enabledDate = enabledDateField.toDate().toISOString();
+                  } else if (enabledDateField instanceof Date) {
+                    enabledDate = enabledDateField.toISOString();
+                  } else if (typeof enabledDateField === 'string') {
+                    enabledDate = enabledDateField;
+                  } else if (enabledDateField.seconds) {
+                    enabledDate = new Date(enabledDateField.seconds * 1000).toISOString();
+                  }
+                }
+                
+                return {
+                  ...firebaseForm,
+                  dateCompleted: completedDate,
+                  dateEnabled: enabledDate
+                };
+              }));
+            } else {
+              // Fallback to individual field approach
+              setCompletedForms(prev => prev.map(form => {
+                const isCompleted = data[`${form.formType}FormCompleted`] || false;
+                const isEnabled = data[`${form.formType}FormEnabled`];
+                const completedDateField = data[`${form.formType}FormCompletedDate`];
+                const enabledDateField = data[`${form.formType}FormEnabledDate`];
+                
+                let completedDate = null;
+                let enabledDate = null;
+                
+                if (completedDateField) {
+                  if (typeof completedDateField.toDate === 'function') {
+                    completedDate = completedDateField.toDate().toISOString();
+                  } else if (completedDateField instanceof Date) {
+                    completedDate = completedDateField.toISOString();
+                  } else if (typeof completedDateField === 'string') {
+                    completedDate = completedDateField;
+                  } else if (completedDateField.seconds) {
+                    completedDate = new Date(completedDateField.seconds * 1000).toISOString();
+                  }
+                }
+                
+                if (enabledDateField) {
+                  if (typeof enabledDateField.toDate === 'function') {
+                    enabledDate = enabledDateField.toDate().toISOString();
+                  } else if (enabledDateField instanceof Date) {
+                    enabledDate = enabledDateField.toISOString();
+                  } else if (typeof enabledDateField === 'string') {
+                    enabledDate = enabledDateField;
+                  } else if (enabledDateField.seconds) {
+                    enabledDate = new Date(enabledDateField.seconds * 1000).toISOString();
+                  }
+                }
+                
+                return {
+                  ...form,
+                  completed: isCompleted,
+                  dateCompleted: completedDate,
+                  enabled: isEnabled !== undefined ? isEnabled : form.enabled,
+                  dateEnabled: enabledDate || form.dateEnabled
+                };
+              }));
+            }
           }
         } catch (error) {
           console.error("Error fetching staff profile:", error);
@@ -215,9 +334,20 @@ export default function StaffPortal() {
     );
   }
 
+  // Helper function to get first name
+  const getFirstName = (fullName) => {
+    if (!fullName) return '';
+    return fullName.split(' ')[0];
+  };
+
   // Staff dashboard content with modular components
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 to-slate-100">
+      <Head>
+        <title>{session?.user?.name ? `${getFirstName(session.user.name)} - TSA` : 'TSA Staff Portal'}</title>
+        <meta name="description" content="The Smith Agency Staff Portal" />
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       {/* Header */}
       <StaffHeader session={session} />
 
@@ -282,7 +412,7 @@ export default function StaffPortal() {
 
             {activeMobileView === 'availability' && (
               <div className="animate-fadeIn">
-                <AvailabilityCard session={session} staffDocRef={staffDocRef} />
+                <AvailabilityCard session={session} staffDocRef={staffDocRef} completedForms={completedForms} staffData={staffData} />
               </div>
             )}
 
@@ -291,14 +421,22 @@ export default function StaffPortal() {
                 <BookingsCard 
                   staffDocRef={staffDocRef} 
                   staffEmail={session.user.email} 
-                  staffName={session.user.name} 
+                  staffName={session.user.name}
+                  completedForms={completedForms}
+                  staffData={staffData}
                 />
               </div>
             )}
 
             {activeMobileView === 'forms' && (
               <div className="animate-fadeIn">
-                <FormsCard />
+                <FormsCard 
+                  completedForms={completedForms} 
+                  onFormComplete={handleFormComplete}
+                  staffDocRef={staffDocRef}
+                  session={session}
+                  staffData={staffData}
+                />
               </div>
             )}
 
@@ -312,7 +450,6 @@ export default function StaffPortal() {
         
         {/* Desktop Grid Layout */}
         <div className="hidden lg:block">
-          {/* Main Row - Profile+Forms, Calendar+Resources, Bookings/Availability */}
           <div className="grid grid-cols-7 gap-6 min-h-[calc(100vh-200px)]">
             {/* Left Column - Profile + Forms (2 columns) */}
             <div className="col-span-2 space-y-4">
@@ -328,62 +465,75 @@ export default function StaffPortal() {
               
               {/* Forms Section */}
               <div className="h-[35%]">
-                <FormsCard />
+                <FormsCard 
+                  completedForms={completedForms} 
+                  onFormComplete={handleFormComplete}
+                  staffDocRef={staffDocRef}
+                  session={session}
+                  staffData={staffData}
+                />
               </div>
             </div>
 
-            {/* Center Column - Calendar + Resources (3 columns) */}
-            <div className="col-span-3 space-y-4">
-              {/* Calendar Section - Taller to avoid scrolling */}
-              <div className="h-[70%]">
-                <CalendarCard staffDocRef={staffDocRef} />
-              </div>
-              
-              {/* Resources Section */}
-              <div className="h-[25%]">
-                <ResourcesOnlyCard />
-              </div>
-            </div>
+            {/* Center + Right Area (5 columns) */}
+            <div className="col-span-5 space-y-4">
+              {/* Top Row - Calendar and Availability/Bookings */}
+              <div className="grid grid-cols-5 gap-6 h-[75%]">
+                {/* Calendar Section (3 columns) */}
+                <div className="col-span-3">
+                  <CalendarCard staffDocRef={staffDocRef} />
+                </div>
 
-            {/* Right Column - Bookings/Availability with Tabs (2 columns) */}
-            <div className="col-span-2 space-y-4">
-              {/* Tab Switcher */}
-              <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-2">
-                <div className="flex space-x-1">
-                  <button
-                    className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                      activeDesktopTab === 'availability' 
-                        ? 'bg-pink-500 text-white shadow-lg' 
-                        : 'text-slate-600 hover:bg-pink-50'
-                    }`}
-                    onClick={() => setActiveDesktopTab('availability')}
-                  >
-                    Availability
-                  </button>
-                  <button
-                    className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
-                      activeDesktopTab === 'bookings' 
-                        ? 'bg-pink-500 text-white shadow-lg' 
-                        : 'text-slate-600 hover:bg-pink-50'
-                    }`}
-                    onClick={() => setActiveDesktopTab('bookings')}
-                  >
-                    Bookings
-                  </button>
+                {/* Availability/Bookings Section (2 columns) */}
+                <div className="col-span-2 flex flex-col h-full max-h-full overflow-hidden">
+                  {/* Tab Switcher */}
+                  <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-pink-200 p-2 flex-shrink-0 mb-4">
+                    <div className="flex space-x-1">
+                      <button
+                        className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                          activeDesktopTab === 'availability' 
+                            ? 'bg-pink-500 text-white shadow-lg' 
+                            : 'text-slate-600 hover:bg-pink-50'
+                        }`}
+                        onClick={() => setActiveDesktopTab('availability')}
+                      >
+                        Availability
+                      </button>
+                      <button
+                        className={`flex-1 py-3 px-4 rounded-xl font-semibold text-sm transition-all duration-300 ${
+                          activeDesktopTab === 'bookings' 
+                            ? 'bg-pink-500 text-white shadow-lg' 
+                            : 'text-slate-600 hover:bg-pink-50'
+                        }`}
+                        onClick={() => setActiveDesktopTab('bookings')}
+                      >
+                        Bookings
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Content Area - Strictly constrained height */}
+                  <div className="flex-1 min-h-0 max-h-full overflow-hidden">
+                    <div className="h-full">
+                      {activeDesktopTab === 'availability' ? (
+                        <AvailabilityCard session={session} staffDocRef={staffDocRef} completedForms={completedForms} staffData={staffData} />
+                      ) : (
+                        <BookingsCard 
+                          staffDocRef={staffDocRef} 
+                          staffEmail={session.user.email} 
+                          staffName={session.user.name}
+                          completedForms={completedForms}
+                          staffData={staffData}
+                        />
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
 
-              {/* Content Area */}
-              <div className="flex-1">
-                {activeDesktopTab === 'availability' ? (
-                  <AvailabilityCard session={session} staffDocRef={staffDocRef} />
-                ) : (
-                  <BookingsCard 
-                    staffDocRef={staffDocRef} 
-                    staffEmail={session.user.email} 
-                    staffName={session.user.name} 
-                  />
-                )}
+              {/* Bottom Row - Resources Section */}
+              <div className="h-[20%]">
+                <ResourcesOnlyCard />
               </div>
             </div>
           </div>
@@ -394,8 +544,12 @@ export default function StaffPortal() {
       <footer className="bg-white/80 backdrop-blur-sm border-t border-pink-200 py-6 mt-6">
         <div className="max-w-7xl mx-auto px-4 text-center">
           <div className="flex items-center justify-center space-x-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-pink-500 to-purple-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-xs">TSA</span>
+            <div className="w-6 h-6 rounded-lg overflow-hidden">
+              <img
+                src="/tsa.png"
+                alt="The Smith Agency Logo"
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="font-semibold text-slate-700">The Smith Agency</span>
           </div>

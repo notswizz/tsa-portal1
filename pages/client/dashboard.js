@@ -256,13 +256,17 @@ export default function ClientDashboard() {
 
   return (
     <Layout title="Client Dashboard | The Smith Agency">
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 to-white">
+      <div className="min-h-screen bg-white">
         <header className="bg-white shadow-md border-b-2 border-primary py-3 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center">
               <a href="/" className="flex items-center space-x-2">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold text-lg sm:text-xl">TSA</span>
+                <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden">
+                  <img
+                    src="/tsa.png"
+                    alt="The Smith Agency Logo"
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <span className="text-lg sm:text-2xl font-display font-bold text-primary-800 truncate">
                   The Smith Agency
