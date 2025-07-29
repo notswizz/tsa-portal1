@@ -122,23 +122,25 @@ export default function ResourcesOnlyCard() {
           </div>
 
           {/* Desktop: Horizontal Scrollable Line */}
-          <div className="hidden md:block overflow-x-auto h-full">
-            <div className="flex space-x-3 h-full items-center min-w-max">
+          <div className="hidden md:block overflow-x-auto h-full px-2">
+            <div className="flex justify-center items-center space-x-4 h-full min-w-full">
               {resources.map((resource, index) => (
                 <button
                   key={resource.id}
                   onClick={() => handleResourceClick(resource)}
-                  className="group bg-white/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-orange-200 hover:shadow-md transition-all duration-300 transform hover:scale-[1.05] flex flex-col items-center justify-center text-center min-w-[70px] h-20 flex-shrink-0"
+                  className="group bg-white/80 backdrop-blur-sm rounded-xl p-3 shadow-sm border border-orange-200 hover:shadow-md transition-all duration-300 transform hover:scale-[1.05] flex flex-col items-center justify-center text-center flex-1 h-20 max-w-[120px]"
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${resource.color} flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                  <div className={`w-9 h-9 rounded-lg bg-gradient-to-br ${resource.color} flex items-center justify-center mb-1.5 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                     {typeof resource.icon === 'string' ? (
                       <span className="text-lg">{resource.icon}</span>
                     ) : (
-                      resource.icon
+                      <div className="w-6 h-6 flex items-center justify-center">
+                        {React.cloneElement(resource.icon, { className: 'w-5 h-5 text-white' })}
+                      </div>
                     )}
                   </div>
-                  <h3 className="font-semibold text-slate-800 text-xs leading-tight">{resource.title}</h3>
+                  <h3 className="font-medium text-slate-800 text-[10px] leading-tight">{resource.title}</h3>
                 </button>
               ))}
             </div>

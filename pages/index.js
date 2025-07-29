@@ -35,7 +35,7 @@ export default function Home() {
               Client Portal
             </Link>
             <Link 
-              href="/staff"
+              href="/auth/signin?type=staff"
               className="inline-flex items-center justify-center px-8 py-4 border border-white text-lg font-medium rounded-md shadow-lg text-white bg-transparent hover:bg-white hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white transition-all duration-300 transform hover:-translate-y-1"
               onMouseEnter={() => setIsHoveredStaff(true)}
               onMouseLeave={() => setIsHoveredStaff(false)}
