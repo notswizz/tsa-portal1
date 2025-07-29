@@ -23,7 +23,6 @@ export default function StaffPortal() {
     college: '',
     shoeSize: '',
     dressSize: '',
-    phoneNumber: '',
     address: '',
     phone: '',
   });
@@ -111,9 +110,8 @@ export default function StaffPortal() {
               college: data.college || '',
               shoeSize: data.shoeSize || '',
               dressSize: data.dressSize || '',
-              phoneNumber: data.phoneNumber || '',
               address: data.address || '',
-              phone: data.phone || '',
+              phone: data.phone || data.phoneNumber || '', // Handle legacy phoneNumber field
             };
             
             setProfileData(profileInfo);
