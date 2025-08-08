@@ -7,6 +7,18 @@ import { doc, getDoc, setDoc, addDoc, collection, updateDoc } from 'firebase/fir
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, { apiVersion: '2024-06-20' });
 
 export default async function handler(req, res) {
+  // Basic CORS + health for preflight
+  const origin = req.headers.origin || (process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000');
+  res.setHeader('Access-Control-Allow-Origin', origin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Vary', 'Origin');
+  res.setHeader('x-create-booking-session', 'hit');
+
+  if (req.method === 'OPTIONS') {
+    return res.status(204).end();
+  }
+
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -25,7 +37,7 @@ export default async function handler(req, res) {
   }
 
   try {
-    const origin = req.headers.origin || (process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000');
+    const originForUrls = req.headers.origin || (process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000');
 
     // Load client
     const clientId = session.user.id;
@@ -102,8 +114,8 @@ export default async function handler(req, res) {
         metadata: { bookingId, type: 'booking_fee' },
       },
       metadata: { bookingId, type: 'booking_fee' },
-      success_url: `${origin}/client/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/client/dashboard?tab=book`,
+      success_url: `${originForUrls}/client/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${originForUrls}/client/dashboard?tab=book`,
     });
 
     await updateDoc(bookingDocRef, {
