@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { db } from '../../lib/firebase';
-import { doc, collection, addDoc, getDoc, getDocs } from 'firebase/firestore';
 import { format, parseISO, eachDayOfInterval } from 'date-fns';
 
 export default function BookingForm({ clientId, closeModal }) {
@@ -21,23 +19,22 @@ export default function BookingForm({ clientId, closeModal }) {
   useEffect(() => {
     async function fetchShows() {
       try {
-        const showsSnapshot = await getDocs(collection(db, 'shows'));
-        const showsList = showsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        
+        const res = await fetch('/api/shows');
+        if (!res.ok) throw new Error('Failed to load shows');
+        const data = await res.json();
+        const showsList = data.shows || [];
+
         // Sort shows by start date (newest first)
         showsList.sort((a, b) => {
           return new Date(b.startDate) - new Date(a.startDate);
         });
-        
+
         setShows(showsList);
       } catch (error) {
         console.error("Error fetching shows:", error);
       }
     }
-    
+
     if (clientId) {
       fetchShows();
     }
@@ -48,16 +45,16 @@ export default function BookingForm({ clientId, closeModal }) {
     if (selectedShow) {
       const startDate = parseISO(selectedShow.startDate);
       const endDate = parseISO(selectedShow.endDate);
-      
+
       // Generate an array of all dates between start and end (inclusive)
       const dateRange = eachDayOfInterval({ start: startDate, end: endDate });
-      
+
       // Create default staffing data for each date
       const defaultDatesNeeded = dateRange.map(date => ({
         date: format(date, 'yyyy-MM-dd'),
         staffCount: 0
       }));
-      
+
       setBookingData(prev => ({
         ...prev,
         showId: selectedShow.id,
@@ -72,10 +69,10 @@ export default function BookingForm({ clientId, closeModal }) {
       setSelectedShow(null);
       return;
     }
-    
+
     const show = shows.find(s => s.id === showId);
     setSelectedShow(show);
-    
+
     // Clear error if any
     if (errors.showId) {
       setErrors(prev => ({ ...prev, showId: null }));
@@ -88,7 +85,7 @@ export default function BookingForm({ clientId, closeModal }) {
       ...prev,
       [name]: value
     }));
-    
+
     // Clear error when user is typing
     if (errors[name]) {
       setErrors(prev => ({
@@ -105,7 +102,7 @@ export default function BookingForm({ clientId, closeModal }) {
         ...updatedDatesNeeded[dateIndex],
         staffCount: parseInt(value, 10)
       };
-      
+
       return {
         ...prev,
         datesNeeded: updatedDatesNeeded
@@ -120,81 +117,60 @@ export default function BookingForm({ clientId, closeModal }) {
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!bookingData.showId) {
       newErrors.showId = 'Please select a show';
     }
-    
+
     // Check if at least one day has staff assigned
     const hasStaff = bookingData.datesNeeded.some(day => day.staffCount > 0);
     if (!hasStaff) {
       newErrors.datesNeeded = 'Please assign staff to at least one day';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
-      // Get client data
-      const clientDocRef = doc(db, 'clients', clientId);
-      const clientDoc = await getDoc(clientDocRef);
-      const clientData = clientDoc.exists() ? clientDoc.data() : {};
-      
       // Calculate total staff needed
       const totalStaffNeeded = bookingData.datesNeeded.reduce((sum, date) => sum + date.staffCount, 0);
-      
-      // Create booking in Firestore
-      const bookingRef = await addDoc(collection(db, 'bookings'), {
-        clientId: clientId,
-        createdAt: new Date().toISOString(),
-        datesNeeded: bookingData.datesNeeded,
-        notes: bookingData.notes,
-        showId: bookingData.showId,
-        showName: selectedShow.name,
-        totalStaffNeeded,
-        status: 'pending',
-        showData: {
-          location: selectedShow.location,
-          startDate: selectedShow.startDate,
-          endDate: selectedShow.endDate
-        }
+
+      // Create Stripe Checkout Session via API
+      const response = await fetch('/api/stripe/create-booking-session', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          showId: bookingData.showId,
+          notes: bookingData.notes,
+          datesNeeded: bookingData.datesNeeded,
+          totalStaffNeeded
+        })
       });
-      
-      // Reset form and show success message
-      setSubmitSuccess(true);
-      
-      // Reset form after showing success
-      setTimeout(() => {
-        setBookingData({
-          showId: '',
-          notes: '',
-          datesNeeded: []
-        });
-        setSelectedShow(null);
-        setSubmitSuccess(false);
-        
-        // Close modal if provided
-        if (typeof closeModal === 'function') {
-          closeModal();
-        } else {
-          router.push('/client/dashboard');
-        }
-      }, 2000);
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: 'Failed to create checkout session' }));
+        throw new Error(err.message || 'Failed to create checkout session');
+      }
+
+      const { url } = await response.json();
+
+      // Redirect to Stripe Checkout
+      window.location.href = url;
     } catch (error) {
       console.error("Error creating booking:", error);
       setErrors(prev => ({
         ...prev,
-        submit: 'Failed to create booking. Please try again.'
+        submit: error.message || 'Failed to create booking. Please try again.'
       }));
     } finally {
       setIsSubmitting(false);
@@ -237,7 +213,7 @@ export default function BookingForm({ clientId, closeModal }) {
               </select>
               {errors.showId && <p className="mt-1 text-sm text-red-600">{errors.showId}</p>}
             </div>
-            
+
             {/* Show Details */}
             {selectedShow && (
               <div className="bg-gray-50 p-4 rounded-md">
@@ -250,20 +226,20 @@ export default function BookingForm({ clientId, closeModal }) {
                 </div>
               </div>
             )}
-            
+
             {/* Staff Needs */}
             {selectedShow && (
               <div>
                 <h3 className="text-lg font-medium text-gray-900 mb-3">Staff Requirements</h3>
-                
+
                 <div className="mb-2 text-sm text-gray-500">
                   Enter the number of staff needed for each day of the show:
                 </div>
-                
+
                 {errors.datesNeeded && (
                   <p className="mb-3 text-sm text-red-600">{errors.datesNeeded}</p>
                 )}
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {bookingData.datesNeeded.map((dateNeeded, index) => (
                     <div key={dateNeeded.date} className="flex flex-col p-3 border border-gray-200 rounded-md">
@@ -292,7 +268,7 @@ export default function BookingForm({ clientId, closeModal }) {
                 </div>
               </div>
             )}
-            
+
             {/* Notes */}
             <div>
               <label htmlFor="notes" className="block text-sm font-medium text-gray-700">
@@ -310,7 +286,7 @@ export default function BookingForm({ clientId, closeModal }) {
                 />
               </div>
             </div>
-            
+
             {/* Submit Error */}
             {errors.submit && (
               <div className="rounded-md bg-red-50 p-4">
@@ -326,7 +302,7 @@ export default function BookingForm({ clientId, closeModal }) {
                 </div>
               </div>
             )}
-            
+
             {/* Buttons */}
             <div className="flex justify-end">
               <button
@@ -347,7 +323,7 @@ export default function BookingForm({ clientId, closeModal }) {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    Processing...
+                    Redirecting to payment...
                   </>
                 ) : (
                   "Submit Booking"
