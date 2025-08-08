@@ -21,12 +21,22 @@ export default async function handler(req, res) {
     return res.status(405).json({ message: 'Method not allowed' });
   }
 
-  const session = await getServerSession(req, res, authOptions);
-  if (!session) {
-    return res.status(401).json({ message: 'You must be signed in to access this endpoint.' });
-  }
-  if (!['staff', 'admin'].includes(session.user.role)) {
-    return res.status(403).json({ message: 'Access denied. Staff/Admin role required.' });
+  // Allow internal server-to-server calls from admin via a shared secret
+  const internalKeyHeader = req.headers['x-internal-key'] || req.headers['x-internal-service-key'];
+  const internalKey = typeof internalKeyHeader === 'string' ? internalKeyHeader : Array.isArray(internalKeyHeader) ? internalKeyHeader[0] : undefined;
+
+  let requesterUser = null;
+  if (internalKey && process.env.INTERNAL_ADMIN_API_KEY && internalKey === process.env.INTERNAL_ADMIN_API_KEY) {
+    requesterUser = { id: 'internal_admin', role: 'admin', email: 'internal@system' };
+  } else {
+    const session = await getServerSession(req, res, authOptions);
+    if (!session) {
+      return res.status(401).json({ message: 'You must be signed in to access this endpoint.' });
+    }
+    if (!['staff', 'admin'].includes(session.user.role)) {
+      return res.status(403).json({ message: 'Access denied. Staff/Admin role required.' });
+    }
+    requesterUser = session.user;
   }
 
   const { bookingId, finalFeeCents, dryRun = false, overrideRateCents } = req.body || {};
@@ -85,7 +95,7 @@ export default async function handler(req, res) {
           totalCents,
           chargedCents: paymentIntent.amount,
           chargedAt: new Date().toISOString(),
-          triggeredByUserId: session.user.id,
+          triggeredByUserId: requesterUser?.id || null,
         },
         updatedAt: new Date().toISOString(),
       });
@@ -121,7 +131,7 @@ export default async function handler(req, res) {
             requiresActionCents: amountToChargeCents,
             checkoutSessionId: checkoutSession.id,
             createdAt: new Date().toISOString(),
-            triggeredByUserId: session.user.id,
+            triggeredByUserId: requesterUser?.id || null,
           },
           updatedAt: new Date().toISOString(),
         });
