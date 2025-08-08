@@ -40,7 +40,12 @@ export default function ContactsSection({
         <div className="flex items-center justify-between mb-6 relative">
           <h4 className="flex items-center gap-2 text-xl font-bold text-primary-700 border-l-4 border-primary-300 pl-3 tracking-tight">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
-              <path d="M13 6a3 3 0 11-6 0 3 3 0 616 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z" />
+              <path d="M18 8a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path d="M14 15a4 4 0 00-8 0v3h8v-3z" />
+              <path d="M6 8a2 2 0 11-4 0 2 2 0 014 0z" />
+              <path d="M16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3z" />
+              <path d="M4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
             </svg>
             CONTACTS
           </h4>
@@ -141,7 +146,12 @@ export default function ContactsSection({
           <div className="bg-white p-10 rounded-xl border border-dashed border-primary-200 text-center">
             <div className="w-16 h-16 mx-auto bg-primary-50 rounded-full flex items-center justify-center mb-3">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-primary" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M13 6a3 3 0 11-6 0 3 3 0 616 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
+                <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path d="M18 8a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path d="M14 15a4 4 0 00-8 0v3h8v-3z" />
+                <path d="M6 8a2 2 0 11-4 0 2 2 0 014 0z" />
+                <path d="M16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3z" />
+                <path d="M4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
               </svg>
             </div>
             <h5 className="text-lg font-medium text-neutral-800 mb-2">No contacts added yet</h5>
