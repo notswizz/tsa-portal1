@@ -81,9 +81,22 @@ export default async function handler(req, res) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        const intentId = session.metadata?.intentId;
+        let intentId = session.metadata?.intentId;
+        if (!intentId && session.payment_intent) {
+          try {
+            const pi = await stripe.paymentIntents.retrieve(session.payment_intent);
+            intentId = pi?.metadata?.intentId || intentId;
+          } catch (e) {
+            console.error('Failed to retrieve PI for session', session.id, e?.message);
+          }
+        }
         if (intentId) {
-          await createBookingFromIntent(intentId, session);
+          const created = await createBookingFromIntent(intentId, session);
+          if (!created) {
+            console.warn('Intent not created/consumed', intentId, 'for session', session.id);
+          }
+        } else {
+          console.warn('No intentId on session', session.id);
         }
         break;
       }
