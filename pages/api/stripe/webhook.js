@@ -69,7 +69,7 @@ export default async function handler(req, res) {
         const pi = event.data.object;
         if (pi.metadata?.type === 'final_fee' && pi.metadata?.bookingId) {
           await updateDoc(doc(db, 'bookings', pi.metadata.bookingId), {
-            status: 'final_paid',
+            status: 'paid',
             finalFeeCentsPaid: pi.amount,
             stripeFinalPaymentIntentId: pi.id,
             updatedAt: new Date().toISOString(),
@@ -82,7 +82,7 @@ export default async function handler(req, res) {
         const bookingId = invoice.metadata?.bookingId;
         if (bookingId) {
           await updateDoc(doc(db, 'bookings', bookingId), {
-            status: 'final_paid',
+            status: 'paid',
             finalFeeCentsPaid: invoice.amount_paid,
             stripeInvoiceId: invoice.id,
             updatedAt: new Date().toISOString(),
