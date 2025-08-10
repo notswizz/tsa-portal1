@@ -31,7 +31,7 @@ export default async function handler(req, res) {
     return res.status(403).json({ message: 'Access denied. Client role required.' });
   }
 
-  const { showId, notes, datesNeeded, totalStaffNeeded } = req.body || {};
+  const { showId, notes, datesNeeded, totalStaffNeeded, primaryContactId, primaryLocationId } = req.body || {};
   if (!showId || !Array.isArray(datesNeeded) || datesNeeded.length === 0) {
     return res.status(400).json({ message: 'Missing required fields' });
   }
@@ -71,9 +71,9 @@ export default async function handler(req, res) {
       return res.status(500).json({ message: 'Server missing STRIPE_BOOKING_FEE_CENTS (>=50)' });
     }
 
-    // Create booking record (pending payment)
+    // Create lightweight booking_intent (not a real booking yet)
     const createdAt = new Date().toISOString();
-    const bookingDocRef = await addDoc(collection(db, 'bookings'), {
+    const intentRef = await addDoc(collection(db, 'booking_intents'), {
       clientId,
       showId,
       showName: show.name,
@@ -85,13 +85,12 @@ export default async function handler(req, res) {
       datesNeeded,
       notes: notes || '',
       totalStaffNeeded: typeof totalStaffNeeded === 'number' ? totalStaffNeeded : (datesNeeded || []).reduce((s, d) => s + (d.staffCount || 0), 0),
-      status: 'payment_pending',
-      paymentStatus: 'payment_pending',
       bookingFeeCents,
+      primaryContactId: primaryContactId || null,
+      primaryLocationId: primaryLocationId || null,
+      status: 'payment_pending',
       createdAt,
     });
-
-    const bookingId = bookingDocRef.id;
 
     // Create Checkout Session for booking fee and save PM for off_session
     const checkoutSession = await stripe.checkout.sessions.create({
@@ -103,7 +102,7 @@ export default async function handler(req, res) {
             currency: 'usd',
             product_data: {
               name: `Booking fee for ${show.name}`,
-              metadata: { bookingId },
+              metadata: { intentId: intentRef.id },
             },
             unit_amount: bookingFeeCents,
           },
@@ -112,14 +111,15 @@ export default async function handler(req, res) {
       ],
       payment_intent_data: {
         setup_future_usage: 'off_session',
-        metadata: { bookingId, type: 'booking_fee' },
+        metadata: { intentId: intentRef.id, type: 'booking_fee' },
       },
-      metadata: { bookingId, type: 'booking_fee' },
+      metadata: { intentId: intentRef.id, type: 'booking_fee' },
       success_url: `${originForUrls}/client/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${originForUrls}/client/dashboard?tab=book`,
     });
 
-    await updateDoc(bookingDocRef, {
+    // Save linkage for reconciliation/abort flows (optional)
+    await updateDoc(intentRef, {
       stripeCheckoutSessionId: checkoutSession.id,
       stripeCustomerId,
     });

@@ -13,11 +13,11 @@ export default function ContactsSection({
   onContactAdded
 }) {
   const scrollRef = useRef(null);
-
+ 
   const scroll = (direction) => {
     if (scrollRef.current) {
       const { scrollLeft, clientWidth } = scrollRef.current;
-      const scrollAmount = clientWidth * 0.95;
+      const scrollAmount = clientWidth * 0.9;
       scrollRef.current.scrollTo({
         left: direction === 'left' ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
         behavior: 'smooth',
@@ -36,9 +36,9 @@ export default function ContactsSection({
   return (
     <div className="space-y-6">
       {/* Contacts Section */}
-      <div className="bg-white rounded-2xl shadow-xl border border-primary-100 pt-6 pb-10 px-12 transition-all duration-200 hover:shadow-2xl relative">
-        <div className="flex items-center justify-between mb-6 relative">
-          <h4 className="flex items-center gap-2 text-xl font-bold text-primary-700 border-l-4 border-primary-300 pl-3 tracking-tight">
+      <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-5 sm:p-6 transition-all duration-200 hover:shadow-2xl relative">
+        <div className="flex items-center justify-between mb-4 sm:mb-5 relative">
+          <h4 className="flex items-center gap-2 text-lg sm:text-xl font-bold text-primary-700 border-l-4 border-primary-300 pl-3 tracking-tight">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z" />
               <path d="M18 8a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -52,7 +52,7 @@ export default function ContactsSection({
           {!showAddContactForm && (
             <button
               onClick={() => setShowAddContactForm(true)}
-              className="absolute top-0 right-0 inline-flex items-center text-lg text-pink-500 hover:text-pink-700 border border-pink-200 rounded-full w-8 h-8 justify-center bg-pink-50 hover:bg-pink-100 shadow transition-colors z-20"
+              className="inline-flex items-center text-lg text-pink-500 hover:text-pink-700 border border-pink-200 rounded-full w-8 h-8 justify-center bg-pink-50 hover:bg-pink-100 shadow transition-colors z-20"
               aria-label="Add contact"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -61,6 +61,7 @@ export default function ContactsSection({
             </button>
           )}
         </div>
+
         {/* Horizontal Scrollable Contacts */}
         {clientData.contacts && clientData.contacts.length > 0 ? (
           <div className="relative">
@@ -74,7 +75,7 @@ export default function ContactsSection({
             </button>
             <div
               ref={scrollRef}
-              className="flex gap-6 overflow-x-auto scrollbar-hide pr-2 scroll-snap-x snap-mandatory pb-4 relative"
+              className="flex gap-6 overflow-x-auto overflow-y-hidden scrollbar-hide pr-2 scroll-snap-x snap-mandatory pb-4 relative"
               style={{ scrollBehavior: 'smooth', scrollSnapType: 'x mandatory' }}
             >
               {clientData.contacts.map((contact, index) => (
@@ -114,7 +115,7 @@ export default function ContactsSection({
                     )}
                     {contact.location && (
                       <div className="flex items-center gap-2 text-sm text-pink-700">
-                        <span className="bg-pink-50 rounded-full p-1 flex items-center justify-center"><svg className="h-4 w-4 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" /><circle cx="12" cy="10" r="3" /></svg></span>
+                        <span className="bg-pink-50 rounded-full p-1 flex items-center justify-center"><svg className="h-4 w-4 text-pink-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 111.314 0z" /><circle cx="12" cy="10" r="3" /></svg></span>
                         {contact.location}
                       </div>
                     )}
@@ -143,9 +144,9 @@ export default function ContactsSection({
             </button>
           </div>
         ) : clientData.contacts && clientData.contacts.length === 0 && !showAddContactForm && (
-          <div className="bg-white p-10 rounded-xl border border-dashed border-primary-200 text-center">
-            <div className="w-16 h-16 mx-auto bg-primary-50 rounded-full flex items-center justify-center mb-3">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7 text-primary" viewBox="0 0 20 20" fill="currentColor">
+          <div className="bg-white p-8 rounded-xl border border-dashed border-primary-200 text-center">
+            <div className="w-14 h-14 mx-auto bg-primary-50 rounded-full flex items-center justify-center mb-3">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-primary" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z" />
                 <path d="M18 8a2 2 0 11-4 0 2 2 0 014 0z" />
                 <path d="M14 15a4 4 0 00-8 0v3h8v-3z" />
@@ -154,8 +155,8 @@ export default function ContactsSection({
                 <path d="M4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
               </svg>
             </div>
-            <h5 className="text-lg font-medium text-neutral-800 mb-2">No contacts added yet</h5>
-            <p className="text-neutral-500 mb-4">Add contacts to keep track of your team members</p>
+            <h5 className="text-base font-medium text-neutral-800 mb-2">No contacts added yet</h5>
+            <p className="text-neutral-500 mb-4 text-sm">Add contacts to keep track of your team members</p>
             <button 
               onClick={() => setShowAddContactForm(true)}
               className="btn btn-primary w-full max-w-xs mx-auto flex items-center justify-center gap-2">
@@ -166,10 +167,11 @@ export default function ContactsSection({
             </button>
           </div>
         )}
+
         {/* Add New Contact Form as Modal */}
         {showAddContactForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div className="bg-white rounded-2xl p-8 border border-primary-100 shadow-2xl max-w-lg w-full relative">
+            <div className="bg-white rounded-2xl p-6 border border-primary-100 shadow-2xl max-w-lg w-full relative">
               <button
                 className="absolute top-3 right-3 text-neutral-400 hover:text-primary"
                 onClick={() => setShowAddContactForm(false)}
@@ -179,7 +181,7 @@ export default function ContactsSection({
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
                 </svg>
               </button>
-              <h5 className="font-semibold text-primary-800 mb-6 flex items-center text-lg">
+              <h5 className="font-semibold text-primary-800 mb-4 flex items-center text-lg">
                 <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center mr-3">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-primary" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
@@ -187,7 +189,7 @@ export default function ContactsSection({
                 </div>
                 Add New Contact
               </h5>
-              <form className="flex flex-col gap-5" onSubmit={handleAddContact}>
+              <form className="flex flex-col gap-4" onSubmit={handleAddContact}>
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 mb-1">Name</label>
                   <div className="relative rounded-md shadow-sm">
@@ -293,7 +295,7 @@ export default function ContactsSection({
                 </div>
                 <button
                   type="submit"
-                  className="mt-7 inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-semibold rounded-xl shadow-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors w-full md:w-auto"
+                  className="mt-4 inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-semibold rounded-xl shadow-md text-white bg-primary hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors w-full md:w-auto"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />

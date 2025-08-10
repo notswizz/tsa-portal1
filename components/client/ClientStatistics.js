@@ -104,29 +104,29 @@ export default function ClientStatistics({ clientId }) {
   
   return (
     <div className="w-full">
-      <div className="grid grid-cols-2 gap-3 mb-4">
-        <div className="bg-primary-50 rounded-lg p-3 shadow-sm border border-primary-100 transition-all duration-200 hover:shadow">
-          <div className="flex items-center mb-1">
-            <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center mr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+      <div className="grid grid-cols-2 gap-3 mb-2">
+        <div className="bg-primary-50 rounded-lg p-2.5 shadow-sm border border-primary-100 transition-all duration-200 hover:shadow">
+          <div className="flex items-center mb-0.5">
+            <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-primary" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 01-1 1h-2a1 1 0 01-1-1v-2a1 1 0 00-1-1H7a1 1 0 00-1 1v2a1 1 0 01-1 1H3a1 1 0 01-1-1V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-xs font-medium text-neutral-500">Shows</p>
+            <p className="text-[11px] font-medium text-neutral-500">Shows</p>
           </div>
-          <p className="text-2xl font-display font-semibold text-neutral-800 ml-9">{stats.totalShows}</p>
+          <p className="text-xl font-display font-semibold text-neutral-800 ml-8">{stats.totalShows}</p>
         </div>
         
-        <div className="bg-primary-50 rounded-lg p-3 shadow-sm border border-primary-100 transition-all duration-200 hover:shadow">
-          <div className="flex items-center mb-1">
-            <div className="w-7 h-7 rounded-full bg-primary-100 flex items-center justify-center mr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 text-primary" viewBox="0 0 20 20" fill="currentColor">
+        <div className="bg-primary-50 rounded-lg p-2.5 shadow-sm border border-primary-100 transition-all duration-200 hover:shadow">
+          <div className="flex items-center mb-0.5">
+            <div className="w-6 h-6 rounded-full bg-primary-100 flex items-center justify-center mr-2">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-primary" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
               </svg>
             </div>
-            <p className="text-xs font-medium text-neutral-500">Days</p>
+            <p className="text-[11px] font-medium text-neutral-500">Days</p>
           </div>
-          <p className="text-2xl font-display font-semibold text-neutral-800 ml-9">{stats.totalDaysBooked}</p>
+          <p className="text-xl font-display font-semibold text-neutral-800 ml-8">{stats.totalDaysBooked}</p>
         </div>
       </div>
       

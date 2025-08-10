@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { db } from '@/lib/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, addDoc, collection, deleteDoc } from 'firebase/firestore';
 
 export const config = {
   api: {
@@ -17,6 +17,47 @@ async function readRawBody(req) {
     req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
+}
+
+async function createBookingFromIntent(intentId, sessionLike) {
+  try {
+    if (!intentId) return false;
+    const intentRef = doc(db, 'booking_intents', intentId);
+    const intentSnap = await getDoc(intentRef);
+    if (!intentSnap.exists()) return false;
+    const intent = intentSnap.data();
+
+    // Guard: if already consumed, skip
+    if (intent.consumedAt) return true;
+
+    const bookingRef = await addDoc(collection(db, 'bookings'), {
+      clientId: intent.clientId,
+      showId: intent.showId,
+      showName: intent.showName,
+      showData: intent.showData,
+      datesNeeded: intent.datesNeeded,
+      notes: intent.notes,
+      totalStaffNeeded: intent.totalStaffNeeded,
+      status: 'deposit_paid',
+      paymentStatus: 'payment_pending',
+      bookingFeeCents: intent.bookingFeeCents,
+      primaryContactId: intent.primaryContactId || null,
+      primaryLocationId: intent.primaryLocationId || null,
+      stripeCheckoutSessionId: sessionLike?.id || null,
+      stripePaymentIntentId: sessionLike?.payment_intent || sessionLike?.id || null,
+      stripeCustomerId: sessionLike?.customer || null,
+      bookingFeeCentsPaid: sessionLike?.amount_total || sessionLike?.amount || null,
+      createdAt: intent.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+
+    // Mark intent consumed; keep doc briefly for traceability
+    await updateDoc(intentRef, { consumedAt: new Date().toISOString(), bookingId: bookingRef.id });
+    return true;
+  } catch (e) {
+    console.error('createBookingFromIntent error', e);
+    return false;
+  }
 }
 
 export default async function handler(req, res) {
@@ -40,29 +81,17 @@ export default async function handler(req, res) {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object;
-        const bookingId = session.metadata?.bookingId;
-        const paymentIntentId = session.payment_intent;
-        if (bookingId) {
-          await updateDoc(doc(db, 'bookings', bookingId), {
-            status: 'deposit_paid',
-            paymentStatus: 'payment_pending',
-            stripeCheckoutSessionId: session.id,
-            stripePaymentIntentId: paymentIntentId,
-            stripeCustomerId: session.customer,
-            bookingFeeCentsPaid: session.amount_total || null,
-            updatedAt: new Date().toISOString(),
-          });
+        const intentId = session.metadata?.intentId;
+        if (intentId) {
+          await createBookingFromIntent(intentId, session);
         }
         break;
       }
       case 'checkout.session.expired': {
         const session = event.data.object;
-        const bookingId = session.metadata?.bookingId;
-        if (bookingId) {
-          await updateDoc(doc(db, 'bookings', bookingId), {
-            status: 'payment_expired',
-            updatedAt: new Date().toISOString(),
-          });
+        const intentId = session.metadata?.intentId;
+        if (intentId) {
+          try { await deleteDoc(doc(db, 'booking_intents', intentId)); } catch (_) {}
         }
         break;
       }
@@ -76,6 +105,10 @@ export default async function handler(req, res) {
             stripeFinalPaymentIntentId: pi.id,
             updatedAt: new Date().toISOString(),
           });
+        }
+        // Also handle booking fee creation fallback
+        if (pi.metadata?.type === 'booking_fee' && pi.metadata?.intentId) {
+          await createBookingFromIntent(pi.metadata.intentId, { id: null, payment_intent: pi.id, customer: pi.customer, amount: pi.amount });
         }
         break;
       }
@@ -94,7 +127,6 @@ export default async function handler(req, res) {
         break;
       }
       default:
-        // no-op for unhandled events
         break;
     }
 
