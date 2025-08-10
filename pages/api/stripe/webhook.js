@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { db } from '@/lib/firebase';
-import { doc, updateDoc, getDoc, addDoc, collection, deleteDoc } from 'firebase/firestore';
+import { doc, updateDoc, getDoc, addDoc, collection, deleteDoc, getDocs, query, where, limit } from 'firebase/firestore';
 
 export const config = {
   api: {
@@ -19,6 +19,17 @@ async function readRawBody(req) {
   });
 }
 
+async function findIntentIdBySessionId(sessionId) {
+  try {
+    const qs = query(collection(db, 'booking_intents'), where('stripeCheckoutSessionId', '==', sessionId), limit(1));
+    const snap = await getDocs(qs);
+    if (!snap.empty) return snap.docs[0].id;
+  } catch (e) {
+    console.error('findIntentIdBySessionId error', e);
+  }
+  return null;
+}
+
 async function createBookingFromIntent(intentId, sessionLike) {
   try {
     if (!intentId) return false;
@@ -27,7 +38,6 @@ async function createBookingFromIntent(intentId, sessionLike) {
     if (!intentSnap.exists()) return false;
     const intent = intentSnap.data();
 
-    // Guard: if already consumed, skip
     if (intent.consumedAt) return true;
 
     const bookingRef = await addDoc(collection(db, 'bookings'), {
@@ -51,7 +61,6 @@ async function createBookingFromIntent(intentId, sessionLike) {
       updatedAt: new Date().toISOString(),
     });
 
-    // Mark intent consumed; keep doc briefly for traceability
     await updateDoc(intentRef, { consumedAt: new Date().toISOString(), bookingId: bookingRef.id });
     return true;
   } catch (e) {
@@ -90,19 +99,20 @@ export default async function handler(req, res) {
             console.error('Failed to retrieve PI for session', session.id, e?.message);
           }
         }
+        if (!intentId) {
+          intentId = await findIntentIdBySessionId(session.id);
+        }
         if (intentId) {
           const created = await createBookingFromIntent(intentId, session);
-          if (!created) {
-            console.warn('Intent not created/consumed', intentId, 'for session', session.id);
-          }
+          if (!created) console.warn('Intent not created/consumed', intentId, 'for session', session.id);
         } else {
-          console.warn('No intentId on session', session.id);
+          console.warn('No intentId resolvable for session', session.id);
         }
         break;
       }
       case 'checkout.session.expired': {
         const session = event.data.object;
-        const intentId = session.metadata?.intentId;
+        const intentId = session.metadata?.intentId || (await findIntentIdBySessionId(session.id));
         if (intentId) {
           try { await deleteDoc(doc(db, 'booking_intents', intentId)); } catch (_) {}
         }
@@ -119,9 +129,23 @@ export default async function handler(req, res) {
             updatedAt: new Date().toISOString(),
           });
         }
-        // Also handle booking fee creation fallback
-        if (pi.metadata?.type === 'booking_fee' && pi.metadata?.intentId) {
-          await createBookingFromIntent(pi.metadata.intentId, { id: null, payment_intent: pi.id, customer: pi.customer, amount: pi.amount });
+        if (pi.metadata?.type === 'booking_fee') {
+          let intentId = pi.metadata?.intentId;
+          if (!intentId) {
+            // Try to locate the Checkout Session for this PI
+            try {
+              const sessions = await stripe.checkout.sessions.list({ payment_intent: pi.id, limit: 1 });
+              const s = sessions?.data?.[0];
+              if (s) {
+                intentId = s.metadata?.intentId || (await findIntentIdBySessionId(s.id));
+                if (intentId) await createBookingFromIntent(intentId, { id: s.id, payment_intent: pi.id, customer: s.customer, amount_total: s.amount_total });
+              }
+            } catch (e) {
+              console.error('sessions.list failed for PI', pi.id, e?.message);
+            }
+          } else {
+            await createBookingFromIntent(intentId, { id: null, payment_intent: pi.id, customer: pi.customer, amount: pi.amount });
+          }
         }
         break;
       }
