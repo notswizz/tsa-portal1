@@ -45,6 +45,7 @@ export default async function handler(req, res) {
         if (bookingId) {
           await updateDoc(doc(db, 'bookings', bookingId), {
             status: 'deposit_paid',
+            paymentStatus: 'payment_pending',
             stripeCheckoutSessionId: session.id,
             stripePaymentIntentId: paymentIntentId,
             stripeCustomerId: session.customer,
@@ -70,6 +71,7 @@ export default async function handler(req, res) {
         if (pi.metadata?.type === 'final_fee' && pi.metadata?.bookingId) {
           await updateDoc(doc(db, 'bookings', pi.metadata.bookingId), {
             status: 'paid',
+            paymentStatus: 'paid',
             finalFeeCentsPaid: pi.amount,
             stripeFinalPaymentIntentId: pi.id,
             updatedAt: new Date().toISOString(),
@@ -83,6 +85,7 @@ export default async function handler(req, res) {
         if (bookingId) {
           await updateDoc(doc(db, 'bookings', bookingId), {
             status: 'paid',
+            paymentStatus: 'paid',
             finalFeeCentsPaid: invoice.amount_paid,
             stripeInvoiceId: invoice.id,
             updatedAt: new Date().toISOString(),

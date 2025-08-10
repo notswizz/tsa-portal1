@@ -86,6 +86,7 @@ export default async function handler(req, res) {
       notes: notes || '',
       totalStaffNeeded: typeof totalStaffNeeded === 'number' ? totalStaffNeeded : (datesNeeded || []).reduce((s, d) => s + (d.staffCount || 0), 0),
       status: 'payment_pending',
+      paymentStatus: 'payment_pending',
       bookingFeeCents,
       createdAt,
     });

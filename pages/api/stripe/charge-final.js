@@ -180,6 +180,7 @@ export default async function handler(req, res) {
 
       await updateDoc(bookingRef, {
         status: 'paid',
+        paymentStatus: 'paid',
         finalFeeCentsPaid: paymentIntent.amount,
         stripeFinalPaymentIntentId: paymentIntent.id,
         finalCalculation: {
