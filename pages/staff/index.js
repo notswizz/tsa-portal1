@@ -57,6 +57,17 @@ export default function StaffPortal() {
           : form
       )
     );
+    // If application was just completed, hydrate profile UI with submitted values
+    if (formType === 'application') {
+      setProfileData(prev => ({
+        ...prev,
+        college: formData.college || prev.college,
+        phone: formData.phone || prev.phone,
+        address: formData.address || prev.address,
+        shoeSize: formData.shoeSize || prev.shoeSize,
+        dressSize: formData.dressSize || prev.dressSize,
+      }));
+    }
     console.log(`${formType} form completed with data:`, formData);
   };
 
@@ -241,7 +252,7 @@ export default function StaffPortal() {
     const icons = {
       calendar: (
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 01-2 2v12a2 2 0 002 2z" />
         </svg>
       ),
       clock: (

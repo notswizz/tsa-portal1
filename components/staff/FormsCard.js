@@ -16,7 +16,11 @@ export default function FormsCard({ completedForms = [], onFormComplete, staffDo
     interviewFormat: '',
     motivation: '',
     experience: '',
-    questions: ''
+    questions: '',
+    phone: '',
+    address: '',
+    shoeSize: '',
+    dressSize: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
@@ -142,7 +146,11 @@ export default function FormsCard({ completedForms = [], onFormComplete, staffDo
       interviewFormat: '',
       motivation: '',
       experience: '',
-      questions: ''
+      questions: '',
+      phone: '',
+      address: '',
+      shoeSize: '',
+      dressSize: ''
     });
   };
 
@@ -230,7 +238,16 @@ export default function FormsCard({ completedForms = [], onFormComplete, staffDo
           [`${formType}FormCompleted`]: true,
           [`${formType}FormCompletedDate`]: Timestamp.now(),
           completedForms: updatedCompletedForms,
-          updatedAt: Timestamp.now()
+          updatedAt: Timestamp.now(),
+          // Map application data into profile fields for convenience
+          ...(formType === 'application' ? {
+            name: formData.name,
+            college: formData.college,
+            phone: formData.phone,
+            address: formData.address,
+            shoeSize: formData.shoeSize,
+            dressSize: formData.dressSize
+          } : {})
         };
         
         await updateDoc(staffDocRef, updateData);
@@ -450,6 +467,59 @@ export default function FormsCard({ completedForms = [], onFormComplete, staffDo
                       className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
                       placeholder="University or College name"
                     />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Phone *</label>
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                      placeholder="e.g. +15551234567 or 555-123-4567"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-slate-700 mb-2">Address *</label>
+                    <input
+                      type="text"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleInputChange}
+                      required
+                      className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                      placeholder="Street, City, State"
+                    />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Shoe Size *</label>
+                      <input
+                        type="text"
+                        name="shoeSize"
+                        value={formData.shoeSize}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                        placeholder="e.g. 8, 9.5, 10"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-slate-700 mb-2">Dress Size *</label>
+                      <input
+                        type="text"
+                        name="dressSize"
+                        value={formData.dressSize}
+                        onChange={handleInputChange}
+                        required
+                        className="w-full p-3 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent bg-white"
+                        placeholder="e.g. S, M, 4, 6"
+                      />
+                    </div>
                   </div>
                   
                   <div>
