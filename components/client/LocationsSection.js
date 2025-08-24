@@ -30,25 +30,26 @@ export default function LocationsSection({
 
   return (
     <div className="space-y-6 mt-8">
-      <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-12 transition-all duration-200 hover:shadow-2xl">
-        <div className="flex items-center justify-between mb-6">
-          <h4 className="flex items-center gap-2 text-xl font-bold text-primary-700 mb-6 border-l-4 border-primary-300 pl-3 tracking-tight">
+      <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-6 sm:p-8 transition-all duration-200 hover:shadow-2xl">
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="flex items-center gap-2 text-lg sm:text-xl font-bold text-primary-700 border-l-4 border-primary-300 pl-3 tracking-tight">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
               <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 11 7 11s7-5.75 7-11c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1112 6a2.5 2.5 0 010 5.5z" />
             </svg>
             LOCATIONS
           </h4>
-          {!showAddLocationForm && (
-            <button
-              onClick={() => setShowAddLocationForm(true)}
-              className="inline-flex items-center text-sm text-primary hover:text-primary-dark border border-primary-200 rounded-lg px-3 py-1 bg-primary-50 hover:bg-primary-100 transition-colors"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-             
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {!showAddLocationForm && (
+              <button
+                onClick={() => setShowAddLocationForm(true)}
+                className="inline-flex items-center text-sm text-primary hover:text-primary-dark border border-primary-200 rounded-lg px-3 py-1 bg-primary-50 hover:bg-primary-100 transition-colors"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
         {/* Horizontal Scrollable Locations */}
         {locations && locations.length > 0 ? (

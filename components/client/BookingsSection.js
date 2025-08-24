@@ -3,7 +3,7 @@ import BookingsList from './BookingsList';
 
 export default function BookingsSection({ clientId, openBookingModal }) {
   return (
-    <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-12 transition-all duration-200 hover:shadow-2xl">
+    <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-5 sm:p-6 transition-all duration-200 hover:shadow-2xl h-full">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center space-x-2">
           <span className="flex-shrink-0 p-1.5 rounded-lg bg-primary-50">
@@ -23,7 +23,7 @@ export default function BookingsSection({ clientId, openBookingModal }) {
           New Booking
         </button>
       </div>
-      <div className="card-body overflow-y-auto max-h-[600px]">
+      <div className="card-body overflow-y-auto max-h-[65vh] md:max-h-[70vh] pr-1">
         <BookingsList clientId={clientId} />
       </div>
     </div>

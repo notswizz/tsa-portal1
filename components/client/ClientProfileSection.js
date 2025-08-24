@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ContactsSection from './ContactsSection';
 import ClientStatistics from './ClientStatistics';
 import { useRouter } from 'next/router';
@@ -24,6 +24,7 @@ export default function ClientProfileSection({
   handleNewLocationChange
 }) {
   const router = useRouter();
+  const [activePanel, setActivePanel] = useState('contacts'); // 'contacts' | 'locations'
   const handleContactAdded = () => {
     router.reload();
   };
@@ -54,27 +55,49 @@ export default function ClientProfileSection({
           {/* Shrink top spacing and remove extra header row */}
           <ClientStatistics clientId={clientData.id} />
         </div>
-        <ContactsSection
-          clientData={clientData}
-          editedProfile={editedProfile}
-          handleProfileChange={handleProfileChange}
-          showAddContactForm={showAddContactForm}
-          setShowAddContactForm={setShowAddContactForm}
-          newContact={newContact}
-          handleNewContactChange={handleNewContactChange}
-          addContact={addContact}
-          removeContact={removeContact}
-          onContactAdded={handleContactAdded}
-        />
-        <LocationsSection
-          locations={locations}
-          addLocation={addLocation}
-          removeLocation={removeLocation}
-          showAddLocationForm={showAddLocationForm}
-          setShowAddLocationForm={setShowAddLocationForm}
-          newLocation={newLocation}
-          handleNewLocationChange={handleNewLocationChange}
-        />
+        {/* Toggle between Contacts and Locations (moved below stats) */}
+        <div className="-mt-1 mb-1">
+          <div className="inline-flex rounded-lg border border-primary-100 bg-primary-50 p-1 text-sm">
+            <button
+              type="button"
+              onClick={() => setActivePanel('contacts')}
+              className={`${activePanel === 'contacts' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-primary'} px-3 py-1.5 rounded-md transition`}
+            >
+              Contacts
+            </button>
+            <button
+              type="button"
+              onClick={() => setActivePanel('locations')}
+              className={`${activePanel === 'locations' ? 'bg-white text-primary-700 shadow-sm' : 'text-neutral-600 hover:text-primary'} px-3 py-1.5 rounded-md transition`}
+            >
+              Showrooms
+            </button>
+          </div>
+        </div>
+        {activePanel === 'contacts' ? (
+          <ContactsSection
+            clientData={clientData}
+            editedProfile={editedProfile}
+            handleProfileChange={handleProfileChange}
+            showAddContactForm={showAddContactForm}
+            setShowAddContactForm={setShowAddContactForm}
+            newContact={newContact}
+            handleNewContactChange={handleNewContactChange}
+            addContact={addContact}
+            removeContact={removeContact}
+            onContactAdded={handleContactAdded}
+          />
+        ) : (
+          <LocationsSection
+            locations={locations}
+            addLocation={addLocation}
+            removeLocation={removeLocation}
+            showAddLocationForm={showAddLocationForm}
+            setShowAddLocationForm={setShowAddLocationForm}
+            newLocation={newLocation}
+            handleNewLocationChange={handleNewLocationChange}
+          />
+        )}
       </div>
     </div>
   );

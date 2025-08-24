@@ -37,7 +37,7 @@ export default function ContactsSection({
     <div className="space-y-6">
       {/* Contacts Section */}
       <div className="bg-white rounded-2xl shadow-xl border border-primary-100 p-5 sm:p-6 transition-all duration-200 hover:shadow-2xl relative">
-        <div className="flex items-center justify-between mb-4 sm:mb-5 relative">
+        <div className="flex items-center justify-between mb-2 sm:mb-3 relative">
           <h4 className="flex items-center gap-2 text-lg sm:text-xl font-bold text-primary-700 border-l-4 border-primary-300 pl-3 tracking-tight">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-primary" viewBox="0 0 20 20" fill="currentColor">
               <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -49,20 +49,22 @@ export default function ContactsSection({
             </svg>
             CONTACTS
           </h4>
-          {!showAddContactForm && (
-            <button
-              onClick={() => setShowAddContactForm(true)}
-              className="inline-flex items-center text-lg text-pink-500 hover:text-pink-700 border border-pink-200 rounded-full w-8 h-8 justify-center bg-pink-50 hover:bg-pink-100 shadow transition-colors z-20"
-              aria-label="Add contact"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
-              </svg>
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {!showAddContactForm && (
+              <button
+                onClick={() => setShowAddContactForm(true)}
+                className="inline-flex items-center text-lg text-pink-500 hover:text-pink-700 border border-pink-200 rounded-full w-8 h-8 justify-center bg-pink-50 hover:bg-pink-100 shadow transition-colors z-20"
+                aria-label="Add contact"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clipRule="evenodd" />
+                </svg>
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Horizontal Scrollable Contacts */}
+        {/* Content */}
         {clientData.contacts && clientData.contacts.length > 0 ? (
           <div className="relative">
             <button
