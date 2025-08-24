@@ -20,14 +20,16 @@ export default function ShowAvailability({ session, staffDocRef }) {
         setLoading(true);
         const showsCollection = collection(db, 'shows');
         const showSnapshot = await getDocs(showsCollection);
-        const showsList = showSnapshot.docs.map(doc => ({
+        const allShowsList = showSnapshot.docs.map(doc => ({
           id: doc.id,
           ...doc.data()
         }));
-        setShows(showsList);
+        // Only include active shows in the dropdown
+        const activeShows = allShowsList.filter(show => (show.status || 'active') === 'active');
+        setShows(activeShows);
         // Auto-select soonest upcoming show
         const now = new Date();
-        const upcoming = showsList
+        const upcoming = activeShows
           .filter(show => isAfter(parseISO(show.endDate), now))
           .sort((a, b) => parseISO(a.startDate) - parseISO(b.startDate));
         if (upcoming.length > 0) {
