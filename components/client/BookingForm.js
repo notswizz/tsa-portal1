@@ -33,7 +33,9 @@ export default function BookingForm({ clientId, closeModal }) {
         ]);
         if (!showsRes.ok) throw new Error('Failed to load shows');
         const showsData = await showsRes.json();
-        const showsList = (showsData.shows || []).sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+        const showsList = (showsData.shows || [])
+          .filter(s => (s.status || 'active') === 'active')
+          .sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
         setShows(showsList);
 
         if (profileRes.ok) {
@@ -249,7 +251,7 @@ export default function BookingForm({ clientId, closeModal }) {
                   <div className="bg-pink-50 border border-pink-200 rounded-md p-3 space-y-2">
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <input className="border rounded-md px-3 py-2 text-sm" placeholder="City" value={newLocation.city} onChange={e => setNewLocation({ ...newLocation, city: e.target.value })} />
-                      <input className="border rounded-md px-3 py-2 text-sm" placeholder="Building/Floor/Booth #" value={newLocation.booth} onChange={e => setNewLocation({ ...newLocation, booth: e.target.value })} />
+                      <input className="border rounded-md px-3 py-2 text-sm" placeholder="Building/Floor/Showroom #" value={newLocation.booth} onChange={e => setNewLocation({ ...newLocation, booth: e.target.value })} />
                       <input className="border rounded-md px-3 py-2 text-sm" placeholder="Notes (optional)" value={newLocation.notes} onChange={e => setNewLocation({ ...newLocation, notes: e.target.value })} />
                     </div>
                     <div className="flex justify-end gap-2">

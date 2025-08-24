@@ -156,7 +156,6 @@ export default function ContactsSection({
               </svg>
             </div>
             <h5 className="text-base font-medium text-neutral-800 mb-2">No contacts added yet</h5>
-            <p className="text-neutral-500 mb-4 text-sm">Add contacts to keep track of your team members</p>
             <button 
               onClick={() => setShowAddContactForm(true)}
               className="btn btn-primary w-full max-w-xs mx-auto flex items-center justify-center gap-2">

@@ -5,6 +5,7 @@ export default function BookingsList({ clientId }) {
   const [loading, setLoading] = useState(true);
   const [bookings, setBookings] = useState([]);
   const [error, setError] = useState(null);
+  const [selectedBooking, setSelectedBooking] = useState(null);
 
   useEffect(() => {
     async function fetchBookings() {
@@ -50,9 +51,25 @@ export default function BookingsList({ clientId }) {
         return 'badge-danger';
       case 'completed':
         return 'badge-info';
+      case 'deposit_paid':
+        return 'badge-info';
       default:
         return 'badge-neutral';
     }
+  };
+
+  const getFriendlyStatus = (status) => {
+    if (!status || typeof status !== 'string') return '—';
+    const explicit = {
+      deposit_paid: 'Deposit paid',
+      final_paid: 'Final paid',
+    };
+    if (explicit[status]) return explicit[status];
+    // Replace underscores with spaces and capitalize words
+    return status
+      .split('_')
+      .map(w => (w ? w.charAt(0).toUpperCase() + w.slice(1) : w))
+      .join(' ');
   };
 
   if (loading) {
@@ -106,7 +123,14 @@ export default function BookingsList({ clientId }) {
   return (
     <div className="space-y-5">
       {bookings.map((booking) => (
-        <div key={booking.id} className="bg-white rounded-xl shadow border border-primary-100 p-5 flex flex-col gap-3 md:flex-row md:items-center md:gap-6 animate-fadeIn">
+        <div
+          key={booking.id}
+          className="bg-white rounded-xl shadow border border-primary-100 p-5 flex flex-col gap-3 md:flex-row md:items-center md:gap-6 animate-fadeIn cursor-pointer hover:shadow-lg transition"
+          onClick={() => setSelectedBooking(booking)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedBooking(booking); }}
+        >
           {/* Left: Show Info */}
           <div className="flex-1 min-w-0 flex flex-col gap-1">
             <div className="flex items-center gap-2 mb-1">
@@ -132,7 +156,7 @@ export default function BookingsList({ clientId }) {
             )}
           </div>
 
-          {/* Middle: Total Days */}
+          {/* Middle: Staff requested total */}
           <div className="flex flex-col items-center justify-center min-w-[90px]">
             <div className="flex items-center gap-1 text-primary-700 font-semibold">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 20 20" stroke="currentColor">
@@ -140,20 +164,53 @@ export default function BookingsList({ clientId }) {
               </svg>
               <span>{booking.datesNeeded ? booking.datesNeeded.reduce((sum, day) => sum + (day.staffCount || 0), 0) : 0}</span>
             </div>
-            <div className="text-xs text-primary-500 mt-1 font-semibold">total days</div>
+            <div className="text-xs text-primary-500 mt-1 font-semibold">days</div>
           </div>
 
           {/* Right: Status */}
           <div className="flex flex-col items-end justify-center min-w-[120px]">
-            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-100 mb-1 ${getStatusBadgeClass(booking.status)}`}>{booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}</span>
-            {booking.hasAssignedStaff ? (
-              <span className="text-xs text-green-600 font-medium">{booking.uniqueStaffIds?.length || 0} staff assigned</span>
-            ) : (
-              <span className="text-xs text-yellow-600 font-medium">Awaiting assignment</span>
-            )}
+            <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 border border-primary-100 ${getStatusBadgeClass(booking.status)}`}>{getFriendlyStatus(booking.status)}</span>
           </div>
         </div>
       ))}
+
+      {/* Breakdown Modal */}
+      {selectedBooking && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setSelectedBooking(null)}>
+          <div className="bg-white rounded-2xl shadow-2xl border border-primary-100 max-w-lg w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="p-5 border-b border-neutral-200 flex items-center justify-between">
+              <div>
+                <div className="text-lg font-semibold text-neutral-900">{selectedBooking.showName || 'Booking'}</div>
+                {selectedBooking.showData?.startDate && selectedBooking.showData?.endDate && (
+                  <div className="text-xs text-neutral-500">
+                    {format(parseISO(selectedBooking.showData.startDate), 'MMM dd')} - {format(parseISO(selectedBooking.showData.endDate), 'MMM dd, yyyy')}
+                  </div>
+                )}
+              </div>
+              <button className="text-neutral-500 hover:text-neutral-800" onClick={() => setSelectedBooking(null)} aria-label="Close">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" /></svg>
+              </button>
+            </div>
+            <div className="p-5">
+              <div className="mb-3 text-sm text-neutral-600">Per-day breakdown</div>
+              <div className="space-y-2 max-h-[50vh] overflow-y-auto pr-1">
+                {(selectedBooking.datesNeeded || []).map((d, idx) => (
+                  <div key={idx} className="flex items-center justify-between rounded-lg border border-neutral-200 p-3">
+                    <div className="text-sm font-medium text-neutral-900">{d.date ? format(parseISO(d.date), 'EEE, MMM d') : '—'}</div>
+                    <div className="text-sm text-primary-700 font-semibold">{d.staffCount || 0}</div>
+                  </div>
+                ))}
+                {(selectedBooking.datesNeeded || []).length === 0 && (
+                  <div className="text-sm text-neutral-500">No dates in this booking.</div>
+                )}
+              </div>
+            </div>
+            <div className="px-5 pb-5 flex items-center justify-end">
+              <button className="btn btn-primary" onClick={() => setSelectedBooking(null)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 } 
